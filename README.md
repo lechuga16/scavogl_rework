@@ -4,7 +4,6 @@ https://code.google.com/archive/p/scavogl/ , https://github.com/HouseHse/Scavogl
 
 # General
 - No m2 Hunter.
-- No m2 a latas.
 - Solo 4 pindoras.
 - Solo armas T1.
 - Ajuste en el mapa c8m5_rooftop.
