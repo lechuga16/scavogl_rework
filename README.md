@@ -4,7 +4,7 @@ https://code.google.com/archive/p/scavogl/ , https://github.com/HouseHse/Scavogl
 
 # General
 - No m2 Hunter.
-- Solo 4 pindoras.
+- Solo pindoras y Adrelalinas.
 - Solo armas T1.
 - Ajuste en el mapa c8m5_rooftop.
 - Bonus por lata, 20 segundos.
