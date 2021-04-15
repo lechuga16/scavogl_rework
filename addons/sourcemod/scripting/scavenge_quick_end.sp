@@ -124,7 +124,7 @@ EndRoundEarlyOnTime()
 {
 	new oldFlags = GetCommandFlags("scenario_end");
 	// FCVAR_LAUNCHER is actually FCVAR_DEVONLY`
-	SetCommandFlags("scenario_end", oldFlags & ~(FCVAR_CHEAT|FCVAR_LAUNCHER));
+	SetCommandFlags("scenario_end", oldFlags & ~(FCVAR_CHEAT));
 	ServerCommand("scenario_end");
 	ServerExecute();
 	SetCommandFlags("scenario_end", oldFlags);
