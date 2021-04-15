@@ -31,7 +31,7 @@
 - 25 segundos adicionales por lata de gas.
 - No Wallkick.
 
-# Scavogl 2v2
+# Scavogl 1v1
 - 1 Adrelalina en el mapa.
 - Hunter y Jockey.
 - 7 infectados comunes.
