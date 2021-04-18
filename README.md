@@ -42,10 +42,8 @@
 - No Wallkick.
 
 # Copyright
-```
 - ScavOgl Rework es una adaptacion usando como base la configuración "Zonemod 1.9.x". 
 - Todos los plugins y códigos acondicionados son de sus respectivos autores.
 - https://github.com/SirPlease/L4D2-Competitive-Rework
 - https://github.com/HouseHse/Scavogl
 - https://code.google.com/archive/p/scavogl/
-```
