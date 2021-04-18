@@ -1,6 +1,6 @@
 # Scavogl Rework V2.0
 
-[EN] [TRADUCCION](https://translate.google.com/translate?sl=es&tl=en&u=https://github.com/lechuga16/scavogl_rework)
+[EN] [translation](https://translate.google.com/translate?sl=es&tl=en&u=https://github.com/lechuga16/scavogl_rework)
 
 # General
 - No m2 Hunter.
