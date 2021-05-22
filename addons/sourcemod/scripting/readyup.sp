@@ -1304,16 +1304,28 @@ public Action RestartCampaignAny1(Handle timer)
 {
 	char currentmap[128];
 	GetCurrentMap(currentmap, sizeof(currentmap));
+  
+	Call_StartForward(fwdOnReadyRoundRestarted);
+	Call_Finish();
+
+	L4D_RestartScenarioFromVote(currentmap);
+	CreateTimer(2.0, RestartCampaignAny2, _);
+}
+
+public Action RestartCampaignAny2(Handle timer)
+{
+	char currentmap[128];
+	GetCurrentMap(currentmap, sizeof(currentmap));
 
 	Call_StartForward(fwdOnReadyRoundRestarted);
 	Call_Finish();
 
 	L4D_RestartScenarioFromVote(currentmap);
 	ServerCommand("l4d_ready_scavenge_restart 0");
-	CreateTimer(1.0, RestartCampaignAny2, _);
+	CreateTimer(1.0, RestartCampaignAny3, _);
 }
 
-public Action RestartCampaignAny2(Handle timer)
+public Action RestartCampaignAny3(Handle timer)
 {
 	CreateTimer(1.0, ReadyCountdownDelay_Timer, _);
 }
