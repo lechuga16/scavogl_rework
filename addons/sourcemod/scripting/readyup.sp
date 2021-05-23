@@ -111,7 +111,7 @@ public void OnPluginStart()
 	// Scavenge Mode
 	conf 						= LoadGameConfigFile("left4dhooks.l4d2");
 	cvarGameMode 				= FindConVar("mp_gamemode");
-	CreateConVar("l4d_ready_scavenge_restart", "1");
+	CreateConVar("l4d_ready_scavenge_restart", "1", "Mark the first raund for a double reset.", 0, false, 0.0, false, 0.0);
 	cvarScavRestart 			= FindConVar("l4d_ready_scavenge_restart");
 	fwdOnReadyRoundRestarted 	= CreateGlobalForward("OnReadyRoundRestarted", ET_Event);
 
@@ -1028,9 +1028,11 @@ void UpdatePanel()
 		}
 	}
 	
+	// Scavogl message
 	if(IsScavengeMode())
 	{
-		DrawPanelText(menuPanel, "No cans? Cans spawn after ReadyUp");
+		DrawPanelText(menuPanel, "No cans?");
+		DrawPanelText(menuPanel, "Cans spawn after the first ReadyUp");
 		DrawPanelText(menuPanel, " ");
 	}
 	
@@ -1267,6 +1269,9 @@ bool CheckFullReady()
 	return readyCount >= GetConVarInt(survivor_limit) + GetConVarInt(z_max_player_zombies);
 }
 
+// ========================
+//  Scavenge Fix
+// ========================
 stock bool IsScavengeMode()
 {
   char sGameMode[32];
@@ -1333,6 +1338,7 @@ public Action RestartCampaignAny3(Handle timer)
 bool ShouldResetRoundTwiceToGoLive()
 {
 	int round = GetScavengeRoundNumber();
+	GameRules_SetProp("m_nRoundLimit", 5);
 	char ScavRest[10];
 	GetConVarString(cvarScavRestart, ScavRest, sizeof(ScavRest));
 	if(IsScavengeMode() && StrEqual(ScavRest, "1", true) && round == 1) //scavenge pre-first round warmup
