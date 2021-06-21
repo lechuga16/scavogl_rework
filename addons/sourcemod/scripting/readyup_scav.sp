@@ -8,7 +8,7 @@
 #include <sdktools>
 #include <left4dhooks>
 
-#define PLUGIN_VERSION "9.1.2c"
+#define PLUGIN_VERSION "9.1.1c"
 
 #define NULL_VELOCITY view_as<float>({0.0, 0.0, 0.0})
 
@@ -44,8 +44,8 @@ ConVar	l4d_ready_disable_spawns, l4d_ready_survivor_freeze,
 		l4d_ready_cfg_name,
 		l4d_ready_max_players, l4d_ready_delay,
 		l4d_ready_enable_sound, l4d_ready_chuckle, l4d_ready_countdown_sound, l4d_ready_live_sound,
-		fwdOnReadyRoundRestarted,cvarGameMode,cvarScavRestart,conf,
-		l4d_ready_secret;
+		l4d_ready_secret,
+		cvarGameMode, cvarScavRestart;
 
 // Plugin Handles
 ConVar ServerNamer;
@@ -53,7 +53,6 @@ Handle g_hVote;
 GlobalForward liveForward;
 Handle readyCountdownTimer;
 StringMap casterTrie;
-
 //StringMap allowedCastersTrie;
 Handle blockSecretSpam[MAXPLAYERS+1];
 
@@ -108,13 +107,11 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnPluginStart()
 {
-	// Scavenge Mode
-	conf 						= LoadGameConfigFile("left4dhooks.l4d2");
+	// Scavenge
 	cvarGameMode 				= FindConVar("mp_gamemode");
 	CreateConVar("l4d_ready_scavenge_restart", "1", "Mark the first raund for a double reset.", 0, false, 0.0, false, 0.0);
 	cvarScavRestart 			= FindConVar("l4d_ready_scavenge_restart");
-	fwdOnReadyRoundRestarted 	= CreateGlobalForward("OnReadyRoundRestarted", ET_Event);
-
+	
 	CreateConVar("l4d_ready_enabled", "1", "This cvar doesn't do anything, but if it is 0 the logger wont log this game.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	l4d_ready_cfg_name			= CreateConVar("l4d_ready_cfg_name", "", "Configname to display on the ready-up panel", FCVAR_NOTIFY|FCVAR_PRINTABLEONLY);
 	l4d_ready_disable_spawns	= CreateConVar("l4d_ready_disable_spawns", "0", "Prevent SI from having spawns during ready-up", FCVAR_NOTIFY, true, 0.0, true, 1.0);
@@ -133,13 +130,13 @@ public void OnPluginStart()
 	casterTrie = new StringMap();
 	//allowedCastersTrie = new StringMap();
 
-	director_no_specials 		= FindConVar("director_no_specials");
-	god 						= FindConVar("god");
-	sb_stop 					= FindConVar("sb_stop");
-	survivor_limit 				= FindConVar("survivor_limit");
-	z_max_player_zombies 		= FindConVar("z_max_player_zombies");
-	sv_infinite_primary_ammo 	= FindConVar("sv_infinite_primary_ammo");
-	scavenge_round_setup_time 	= FindConVar("scavenge_round_setup_time");
+	director_no_specials = FindConVar("director_no_specials");
+	god = FindConVar("god");
+	sb_stop = FindConVar("sb_stop");
+	survivor_limit = FindConVar("survivor_limit");
+	z_max_player_zombies = FindConVar("z_max_player_zombies");
+	sv_infinite_primary_ammo = FindConVar("sv_infinite_primary_ammo");
+	scavenge_round_setup_time = FindConVar("scavenge_round_setup_time");
 
 	// Ready Commands
 	RegConsoleCmd("sm_ready",		Ready_Cmd, "Mark yourself as ready for the round to go live");
@@ -147,7 +144,7 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_toggleready",	ToggleReady_Cmd, "Toggle your ready status");
 	RegConsoleCmd("sm_unready",		Unready_Cmd, "Mark yourself as not ready if you have set yourself as ready");
 	RegConsoleCmd("sm_nr",			Unready_Cmd, "Mark yourself as not ready if you have set yourself as ready");
-
+	
 	// Caster System
 	RegAdminCmd("sm_caster",		Caster_Cmd, ADMFLAG_BAN, "Registers a player as a caster so the round will not go live unless they are ready");
 	RegConsoleCmd("sm_cast",		Cast_Cmd, "Registers the calling player as a caster so the round will not go live unless they are ready");
@@ -155,7 +152,7 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_uncast",		NotCasting_Cmd, "Deregister yourself as a caster or allow admins to deregister other players");
 	//RegServerCmd("sm_resetcasters", ResetCaster_Cmd, "Used to reset casters between matches.  This should be in confogl_off.cfg or equivalent for your system");
 	//RegServerCmd("sm_add_caster_id", AddCasterSteamID_Cmd, "Used for adding casters to the whitelist -- i.e. who's allowed to self-register as a caster");
-
+	
 	// Player Commands
 	RegConsoleCmd("sm_hide",		Hide_Cmd, "Hides the ready-up panel so other menus can be seen");
 	RegConsoleCmd("sm_show",		Show_Cmd, "Shows a hidden ready-up panel");
@@ -163,20 +160,20 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_forcestart",	ForceStart_Cmd, "Forces the round to start regardless of player ready status.  Players can unready to stop a force");
 	RegConsoleCmd("sm_fs",			ForceStart_Cmd, "Forces the round to start regardless of player ready status.  Players can unready to stop a force");
 	RegConsoleCmd("sm_kickspecs",	KickSpecs_Cmd, "Let's vote to kick those Spectators!");
-
+	
 #if DEBUG
 	RegAdminCmd("sm_initready", InitReady_Cmd, ADMFLAG_ROOT);
 	RegAdminCmd("sm_initlive", InitLive_Cmd, ADMFLAG_ROOT);
 #endif
 
-    AddCommandListener(Say_Callback, "say");
-    AddCommandListener(Say_Callback, "say_team");
-    AddCommandListener(Vote_Callback, "Vote");
+	AddCommandListener(Say_Callback, "say");
+	AddCommandListener(Say_Callback, "say_team");
+	AddCommandListener(Vote_Callback, "Vote");
 
-    LoadTranslations("common.phrases");
+	LoadTranslations("common.phrases");
 	
-    readySurvFreeze = l4d_ready_survivor_freeze.BoolValue;
-    l4d_ready_survivor_freeze.AddChangeHook(SurvFreezeChange);
+	readySurvFreeze = l4d_ready_survivor_freeze.BoolValue;
+	l4d_ready_survivor_freeze.AddChangeHook(SurvFreezeChange);
 }
 
 public void OnPluginEnd()
@@ -806,7 +803,7 @@ public int VoteActionHandler(Handle vote, BuiltinVoteAction action, int param1, 
 	}
 }
 
-public int ForceStartVoteResultHandler(Handle vote, int num_votes, int num_clients, const client_info[][2], int num_items, const item_info[][2])
+public void ForceStartVoteResultHandler(Handle vote, int num_votes, int num_clients, const int[][] client_info, int num_items, const int[][] item_info)
 {
 	if (!inReadyUp || inLiveCountdown)
 	{
@@ -842,7 +839,7 @@ public Action Timer_ForceStart(Handle timer)
 	InitiateLiveCountdown();
 }
 
-public int KickSpecsVoteResultHandler(Handle vote, int num_votes, int num_clients, const client_info[][2], int num_items, const item_info[][2])
+public void KickSpecsVoteResultHandler(Handle vote, int num_votes, int num_clients, const int[][] client_info, int num_items, const int[][] item_info)
 {
 	for (int i = 0; i < num_items; i++)
 	{
@@ -925,7 +922,7 @@ public Action MenuCmd_Timer(Handle timer)
 
 void UpdatePanel()
 {
-	if (IsBuiltinVoteInProgress())
+	if (BuiltinVote_IsVoteInProgress())
 	{
 		for (int i = 1; i <= MaxClients; i++)
 		{
@@ -1027,7 +1024,7 @@ void UpdatePanel()
 			}
 		}
 	}
-	
+
 	// Scavogl message
 	if(IsScavengeMode())
 	{
@@ -1217,28 +1214,26 @@ void InitiateLiveCountdown()
 public Action ReadyCountdownDelay_Timer(Handle timer)
 {
 	if (readyDelay == 0)
+	if(ShouldResetRoundTwiceToGoLive())
 	{
-		if(ShouldResetRoundTwiceToGoLive())
+		PrintHintTextToAll("Match will be live\nafter 2 round restarts.");
+		RestartCampaignAny();
+		return Plugin_Stop;
+	}
+	else
+	{
+		PrintHintTextToAll("Round is live!");
+		InitiateLive();
+		readyCountdownTimer = null;
+		if (l4d_ready_enable_sound.BoolValue)
 		{
-			PrintHintTextToAll("Match will be live\nafter 2 round restarts.");
-			RestartCampaignAny();
-			return Plugin_Stop;
-		}
-		else
-		{
-			PrintHintTextToAll("Round is live!");
-			InitiateLive();
-			readyCountdownTimer = null;
-			if (l4d_ready_enable_sound.BoolValue)
+			if (l4d_ready_chuckle.BoolValue)
 			{
-				if (l4d_ready_chuckle.BoolValue)
-				{
-					EmitSoundToAll(chuckleSound[GetRandomInt(0,MAX_SOUNDS-1)]);
-				}
-				else { EmitSoundToAll(liveSound, _, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 0.5); }
+				EmitSoundToAll(chuckleSound[GetRandomInt(0,MAX_SOUNDS-1)]);
 			}
-			return Plugin_Stop;
+			else { EmitSoundToAll(liveSound, _, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 0.5); }
 		}
+		return Plugin_Stop;
 	}
 	else
 	{
@@ -1294,7 +1289,7 @@ stock int GetScavengeRoundNumber()
 void RestartCampaignAny()
 {
 	StartPrepSDKCall(SDKCall_GameRules);
-	PrepSDKCall_SetFromConf(conf, SDKConf_Signature, "CTerrorGameRules_ResetRoundNumber");
+	PrepSDKCall_SetFromConf(LoadGameConfigFile("left4dhooks.l4d2"), SDKConf_Signature, "CTerrorGameRules_ResetRoundNumber");
 	Handle func = EndPrepSDKCall();
 	if (func == INVALID_HANDLE)
 	{
@@ -1310,7 +1305,7 @@ public Action RestartCampaignAny1(Handle timer)
 	char currentmap[128];
 	GetCurrentMap(currentmap, sizeof(currentmap));
   
-	Call_StartForward(fwdOnReadyRoundRestarted);
+	Call_StartForward(CreateGlobalForward("OnReadyRoundRestarted", ET_Event));
 	Call_Finish();
 
 	L4D_RestartScenarioFromVote(currentmap);
@@ -1322,7 +1317,7 @@ public Action RestartCampaignAny2(Handle timer)
 	char currentmap[128];
 	GetCurrentMap(currentmap, sizeof(currentmap));
 
-	Call_StartForward(fwdOnReadyRoundRestarted);
+	Call_StartForward(CreateGlobalForward("OnReadyRoundRestarted", ET_Event));
 	Call_Finish();
 
 	L4D_RestartScenarioFromVote(currentmap);
@@ -1347,6 +1342,7 @@ bool ShouldResetRoundTwiceToGoLive()
 	//do not reset the round for L4D2 versus or L4D2 scavenge reready
 	return false;
 }
+
 
 void CancelFullReady(int client, disruptType type)
 {
