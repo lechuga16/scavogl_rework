@@ -1,16 +1,18 @@
+#pragma newdecls required
 #pragma semicolon 1
 
 #include <sourcemod>
 #include <sdktools>
 #include <smlib>
+#include <colors>
 
 #define PLUGIN_VERSION "1.0"
 
 //Timer
-new Handle:TimerH = INVALID_HANDLE;
-new Handle:cvarGameMode = INVALID_HANDLE;
+Handle TimerH = INVALID_HANDLE;
+Handle cvarGameMode = INVALID_HANDLE;
 
-public Plugin:myinfo =
+public Plugin myinfo =
 {
 	name = "L4D2 No Mercy Rooftop Scavenge Fix",
 	author = "Ratchet",
@@ -19,9 +21,9 @@ public Plugin:myinfo =
 	url = ""
 }
 
-public OnMapStart()
+public void OnMapStart()
 {
-	decl String:mapname[128];
+	char mapname[128];
 	GetCurrentMap(mapname, sizeof(mapname));
 	
 	if( TimerH != INVALID_HANDLE )
@@ -34,7 +36,7 @@ public OnMapStart()
 		
 	cvarGameMode = FindConVar("mp_gamemode");
 	
-	decl String:sGameMode[32];
+	char sGameMode[32];
 	GetConVarString(cvarGameMode, sGameMode, sizeof(sGameMode));
 	if (strcmp(sGameMode, "scavenge") != 0)
 		return;
@@ -42,21 +44,21 @@ public OnMapStart()
 	TimerH = CreateTimer(15.0, ScavTimerH, _, TIMER_REPEAT);
 }
 
-public Action:ScavTimerH(Handle:Timer, any:Client)
+public Action ScavTimerH(Handle Timer, any Client)
 {		
 	FindMisplacedCans();
 }
 
-stock FindMisplacedCans()
+stock void FindMisplacedCans()
 {
-	new ent = -1;
+	int ent = -1;
 	
 	while ((ent = FindEntityByClassname(ent, "weapon_gascan")) != -1)
 	{
 		if (!IsValidEntity(ent)) 
 			continue;
 
-		new Float:position[3];
+		float position[3];
 		GetEntPropVector(ent, Prop_Send, "m_vecOrigin", position);
 		
 		if( position[2] <= 500.0 )
@@ -66,13 +68,13 @@ stock FindMisplacedCans()
 }
 
 
-stock Ignite(entity)
+stock void Ignite(int entity)
 {
 	AcceptEntityInput(entity, "ignite");
-	Client_PrintToChatAll(true, "[{G}Scavogl{N}] Gascan out of bounds! Ignited!" );
+	CPrintToChatAll("{blue}[{default}Scavogl{blue}]{default} {olive}Gascan{default} out of bounds! {green}Ignited!{default}");
 }
 
-stock FindEntityByClassname2(startEnt, const String:classname[])
+stock void FindEntityByClassname2(int startEnt, const char[] classname)
 {
 	while (startEnt > -1 && !IsValidEntity(startEnt)) startEnt--;
 	return FindEntityByClassname(startEnt, classname);
