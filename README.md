@@ -72,4 +72,4 @@
 - https://github.com/SirPlease/L4D2-Competitive-Rework
 - https://github.com/HouseHse/Scavogl
 - https://code.google.com/archive/p/scavogl/
-- https://github.com/Target5150/MoYu_Server_Stupid_Plugins/tree/master/The%20Last%20Stand/l4d_equalise_alarm_cars
+- https://github.com/Target5150/MoYu_Server_Stupid_Plugins/
