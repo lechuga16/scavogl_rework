@@ -1,74 +1,75 @@
-# Scavogl Rework V2.2
+# Scavogl Rework V2.3
 
 [EN] [translation](https://translate.google.com/translate?sl=es&tl=en&u=https://github.com/lechuga16/scavogl_rework)
 
 # General
-- No m2 Hunter.
-- Solo píldoras y Adrenalina.
-- Solo armas T1.
-- Lata de gas se enciende en 2 segundos.
-- 50% de reaparición de boomer femenina.
-- No habrá infectados comunes sentados.
-- La fatiga del m2 como superviviente comienza con el primero y llega su máximo con el cuarto.
-- Los supervivientes no toserán por el Smoker.
-- 30 segundos en la frecuencia del vomito del Boomer.
-- 20 segundos en la frecuencia del escupo de la Spitter.
-- 13 segundos en la frecuencia para recuperar la lengua del Smoker.
-- 275 puntos de velocidad al jockey.
+- Se eliminan los Deadstops para el Hunter.
+- Se añaden píldoras al inicio.
+- Solo se permiten armas de T1.
+- La lata de gas se enciende en 2 segundos.
+- Se reduce la reaparición de boomer femeninos al 50%.
+- No habrá infectados comunes sentados ni jefes.
+- La fatiga del M2 como superviviente comienza con el primero y alcanza su máximo con el cuarto golpe.
+- Los supervivientes ya no toserán cuando sean atacados por el Smoker.
+- Se ajusta la frecuencia de vómito del Boomer a 30 segundos.
+- Se ajusta la frecuencia de escupir de la Spitter a 20 segundos.
+- Se ajusta la frecuencia de recuperación de la lengua del Smoker a 13 segundos.
+- Se incrementa la velocidad del Jockey en 275 puntos.
 
 # Scavogl
-- 1 Adrenalina adicional en el mapa.
+- Se añade 1 píldora en el mapa.
 - Infectados: Todos.
-- 6 puntos de daño por ataque básico de Hunter.
-- 4 puntos de daño por ataque básico de Jockey, Smoker, Spitter y Boomer.
-- 7 puntos de daño por ataque básico de Charger.
-- 15 segundos de regeneración
-- 30 infectados comunes.
-- 15 infectados comunes por horda.
-- 50 infectados comunes por mega horda.
-- 20 segundos adicionales por lata de gas.
+- Se aumenta el daño por ataque básico del Hunter a 6 puntos.
+- Se establece el daño por ataque básico de Jockey, Smoker, Spitter y Boomer en 4 puntos.
+- Se incrementa el daño por ataque básico de Charger a 7 puntos.
+- Se reduce el tiempo de regeneración a 15 segundos.
+- Se fija en 30 el número de infectados comunes.
+- Se limita a 15 el número de infectados comunes por horda.
+- Se establece en 50 el número de infectados comunes por mega horda.
+- Se añaden 20 segundos adicionales por lata de gas.
 
 # Scavogl 3v3
-- 1 Adrenalina adicional en el mapa.
+- Se eliminan las píldoras en el mapa.
 - Infectados: Hunter, Jockey, Charger y Smoker.
-- 6 puntos de daño por ataque básico de Hunter.
-- 4 puntos de daño por ataque básico de Jockey y Smoker.
-- 7 puntos de daño por ataque básico de Charger.
-- 11 segundos de regeneración
-- 18 infectados comunes.
-- 21 infectados comunes por horda.
-- 32 infectados comunes por mega horda.
-- 20 segundos adicionales por lata de gas.
+- Se mantiene el daño por ataque básico del Hunter en 6 puntos.
+- Se ajusta el daño por ataque básico de Jockey y Smoker a 4 puntos.
+- Se incrementa el daño por ataque básico de Charger a 7 puntos.
+- Se reduce el tiempo de regeneración a 11 segundos.
+- Se ajusta a 18 el número de infectados comunes.
+- Se limita a 21 el número de infectados comunes por horda.
+- Se establece en 32 el número de infectados comunes por mega horda.
+- Se añaden 20 segundos adicionales por lata de gas.
 
 # Scavogl 2v2
 - Infectados: Hunter, Jockey y Charger.
-- 6 puntos de daño por ataque básico de Hunter.
-- 4 puntos de daño por ataque básico de Jockey.
-- 7 puntos de daño por ataque básico de Charger.
-- 10 segundos de regeneración
-- 10 infectados comunes.
-- 13 infectados comunes por horda.
-- 25 infectados comunes por mega horda.
-- 20 segundos adicionales por lata de gas.
-- No Wallkick.
+- Se mantiene el daño por ataque básico del Hunter en 6 puntos.
+- Se ajusta el daño por ataque básico de Jockey a 4 puntos.
+- Se incrementa el daño por ataque básico de Charger a 7 puntos.
+- Se reduce el tiempo de regeneración a 10 segundos.
+- Se limita a 10 el número de infectados comunes.
+- Se establece en 13 el número de infectados comunes por horda.
+- Se ajusta a 25 el número de infectados comunes por mega horda.
+- Se añaden 25 segundos adicionales por lata de gas.
+- Se elimina el Wallkick.
 
 # Scavogl 1v1
+- Se eliminan las píldoras en el mapa.
 - Infectados: Hunter y Jockey.
-- 24 puntos de daño por agarre.
-- Sin daño por ataque básico de Hunter y Jockey.
-- 8 segundos de regeneración
-- 5 infectados comunes.
-- 8 infectados comunes por horda.
-- 12 infectados comunes por mega horda.
-- 25 segundos adicionales por lata de gas.
-- No Wallkick.
+- Se incrementa el daño por agarre a 24 puntos.
+- No hay daño por ataque básico de Hunter y Jockey.
+- Se reduce el tiempo de regeneración a 8 segundos.
+- Se establece en 5 el número de infectados comunes.
+- Se limita a 8 el número de infectados comunes por horda.
+- Se ajusta a 12 el número de infectados comunes por mega horda.
+- Se añaden 25 segundos adicionales por lata de gas.
+- Se elimina el Wallkick.
 
-# ScavHunter, ScavHunter 3v3, ScavHunter 2v2, ScavHunter 1v1.
-- Mantienen las mismas características que la configuración base, pese a limitarse a solo Hunters.
+# ScavHunter, ScavHunter 3v3, ScavHunter 2v2, ScavHunter 1v1
+- Mantienen las mismas características que la configuración base, pero se limitan a solo Hunters.
 
-# Copyright
-- ScavOgl Rework es una adaptación usando como base la configuración "Zonemod 2.x". 
-- Todos los plugins y códigos acondicionados son de sus respectivos autores.
+# Derechos de autor
+- ScavOgl Rework es una adaptación basada en la configuración "Zonemod 2.x".
+- Todos los plugins y códigos adaptados son propiedad de sus respectivos autores.
 - https://github.com/SirPlease/L4D2-Competitive-Rework
 - https://github.com/HouseHse/Scavogl
 - https://code.google.com/archive/p/scavogl/
