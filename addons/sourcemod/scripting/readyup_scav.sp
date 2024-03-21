@@ -6,106 +6,92 @@
 #include <readyup>
 #include <left4dhooks>
 
+ConVar
+	g_cvarScavRestart,
+	g_cvarScavRounds;
+
 public Plugin myinfo =
 {
-	name = "Readyup_Scav",
-	author = "Lechuga",
+	name		= "Readyup_Scav",
+	author		= "Lechuga",
 	description = "fix some bugs and allow to select the number of rounds",
-	version = "1.0",
-	url = "https://github.com/lechuga16/Readyup_Scav"
+	version		= "1.1",
+	url			= "https://github.com/lechuga16/Readyup_Scav"
 };
-
-// Plugin Cvars
-ConVar	l4d_ready_scavenge_rounds, cvarGameMode, cvarScavRestart;
 
 public void OnPluginStart()
 {
-CreateConVar("l4d_ready_scavenge_restart", "1", "Mark the first raund for a double reset.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-l4d_ready_scavenge_rounds	= CreateConVar("l4d_ready_scavenge_rounds", "5", "Set the number of rounds", FCVAR_NOTIFY, true, 1.0, true, 5.0);
-
-cvarScavRestart = FindConVar("l4d_ready_scavenge_restart");
-cvarGameMode 	= FindConVar("mp_gamemode");
+	g_cvarScavRestart = CreateConVar("sm_readyup_scav_restart", "1", "Mark the first raund for a double reset.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_cvarScavRounds  = CreateConVar("sm_readyup_scav_rounds", "5", "Set the number of rounds", FCVAR_NOTIFY, true, 1.0, true, 5.0);
 }
 
-/* Called when the round goes live (Requires Ready Up Plugin)
- * If the Ready Up plugin is available, we use this.
- * It will print boss percents after all players are ready and the round goes live.
-*/
 public void OnRoundIsLive()
 {
-	if(ShouldResetRoundTwiceToGoLive())
-	{
-		PrintHintTextToAll("Match will be live\nafter 2 round restarts.");
-		RestartCampaignAny();
-	}
+	if (!L4D2_IsScavengeMode())
+		return;
+		
+	if (!ShouldResetRoundTwiceToGoLive())
+		return;
+
+	GameRules_SetProp("m_nRoundLimit", g_cvarScavRounds.IntValue);
+	PrintHintTextToAll("Match will be live\nafter 2 round restarts.");
+	RestartCampaignAny();
 }
 
-stock bool IsScavengeMode()
-{
-	char sGameMode[32];
-	GetConVarString(cvarGameMode, sGameMode, sizeof(sGameMode));
-	if (StrContains(sGameMode, "scavenge") > -1)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-stock int GetScavengeRoundNumber()
-{
-	return GameRules_GetProp("m_nRoundNumber");
-}
-
+/**
+ * Determines whether the round should be reset twice before going live.
+ *
+ * @return True if the round should be reset twice, false otherwise.
+ */
 bool ShouldResetRoundTwiceToGoLive()
 {
-	int round = GetScavengeRoundNumber();
-	GameRules_SetProp("m_nRoundLimit", l4d_ready_scavenge_rounds.IntValue);
-	char ScavRest[10];
-	GetConVarString(cvarScavRestart, ScavRest, sizeof(ScavRest));
-	if(IsScavengeMode() && StrEqual(ScavRest, "1", true) && round == 1) //scavenge pre-first round warmup
+	if (g_cvarScavRestart.BoolValue || GameRules_GetProp("m_nRoundNumber") != 1)
+		return false;
+
 	return true;
-	
-	//do not reset the round for L4D2 versus or L4D2 scavenge reready
-	return false;
 }
 
+/**
+ * Restarts the campaign in the game.
+ */
 void RestartCampaignAny()
 {
 	StartPrepSDKCall(SDKCall_GameRules);
 	PrepSDKCall_SetFromConf(LoadGameConfigFile("left4dhooks.l4d2"), SDKConf_Signature, "CTerrorGameRules_ResetRoundNumber");
 	Handle func = EndPrepSDKCall();
+
 	if (func == INVALID_HANDLE)
-	{
 		ThrowError("Failed to end prep sdk call");
-	}
+
 	SDKCall(func);
 	CloseHandle(func);
-	CreateTimer(2.0, RestartCampaignAny1, _);
+	CreateTimer(2.0, RestartCampaignAny1);
 }
 
 public Action RestartCampaignAny1(Handle timer)
 {
-	char currentmap[128];
-	GetCurrentMap(currentmap, sizeof(currentmap));
-	
+	char sCurrentMap[128];
+	GetCurrentMap(sCurrentMap, sizeof(sCurrentMap));
+
 	Call_StartForward(CreateGlobalForward("OnReadyRoundRestarted", ET_Event));
 	Call_Finish();
-	
-	L4D_RestartScenarioFromVote(currentmap);
-	CreateTimer(2.0, RestartCampaignAny2, _);
+
+	L4D_RestartScenarioFromVote(sCurrentMap);
+	CreateTimer(2.0, RestartCampaignAny2);
+
+	return Plugin_Stop;
 }
 
 public Action RestartCampaignAny2(Handle timer)
 {
-	char currentmap[128];
-	GetCurrentMap(currentmap, sizeof(currentmap));
-	
+	char sCurrentMap[128];
+	GetCurrentMap(sCurrentMap, sizeof(sCurrentMap));
+
 	Call_StartForward(CreateGlobalForward("OnReadyRoundRestarted", ET_Event));
 	Call_Finish();
-	
-	L4D_RestartScenarioFromVote(currentmap);
-	ServerCommand("l4d_ready_scavenge_restart 0");
+
+	L4D_RestartScenarioFromVote(sCurrentMap);
+	g_cvarScavRestart.SetBool(false);
+
+	return Plugin_Stop;
 }

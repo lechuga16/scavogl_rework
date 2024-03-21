@@ -38,7 +38,7 @@ public void OnPluginStart()
 {
 	LoadSDK();
 	
-	g_cvAllow = CreateConVar("l4d2_scvng_firsthit_shuffle", "0", "Shuffle first hit classes.\nValue: 1 = Shuffle every round, 2 = Shuffle every match, 0 = Disable.", FCVAR_NOTIFY|FCVAR_SPONLY, true, 0.0, true, 2.0);
+	g_cvAllow = CreateConVar("l4d2_scvng_firsthit_shuffle", "1", "Shuffle first hit classes.\nValue: 1 = Shuffle every round, 2 = Shuffle every match, 0 = Disable.", FCVAR_NOTIFY|FCVAR_SPONLY, true, 0.0, true, 2.0);
 	
 	HookEvent("player_team", Event_PlayerTeam);
 	HookEvent("round_start_pre_entity", Event_RoundStartPreEntity, EventHookMode_PostNoCopy);
@@ -47,7 +47,8 @@ public void OnPluginStart()
 
 void Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast)
 {
-	if (!L4D2_IsScavengeMode()) return;
+	if (!L4D2_IsScavengeMode())
+		return;
 	
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	if (client && event.GetInt("oldteam") == 3)
@@ -58,7 +59,8 @@ void Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast)
 
 void Event_RoundStartPreEntity(Event event, const char[] name, bool dontBroadcast)
 {
-	if (!L4D2_IsScavengeMode()) return;
+	if (!L4D2_IsScavengeMode())
+		return;
 	
 	for (int i = 1; i <= MaxClients; ++i)
 	{
@@ -93,7 +95,8 @@ void Event_PlayerTransitioned(Event event, const char[] name, bool dontBroadcast
 
 public void OnConfigsExecuted()
 {
-	if (!L4D2_IsScavengeMode()) return;
+	if (!L4D2_IsScavengeMode())
+		return;
 	
 	if (g_cvAllow.IntValue == 2)
 	{

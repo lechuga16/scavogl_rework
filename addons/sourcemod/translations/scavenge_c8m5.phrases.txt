@@ -1,0 +1,12 @@
+"Phrases"
+{
+	"Tag"
+	{
+		"en"    "[{green}!{default}]"
+	}
+	"BurnGascan"
+	{
+		"en"	"A {olive}Gas can{default} is out of bounds, {red}It will burn!{default}."
+		"es"	"Una {olive}Lata de gas{default} esta fuera de los límites, {red}Sera quemada!{default}."
+	}
+}
