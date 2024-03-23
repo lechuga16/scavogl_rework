@@ -19,6 +19,12 @@
 		"en"	"The number of rounds is already %d"
 		"es"	"El número de rondas ya es %d"
 	}
+	"GameMode"
+	{
+		"en"	"This command is only available in Scavenge mode"
+		"es"	"Este comando solo está disponible en el modo Busqueda"
+	
+	}
 	"InvalidRounds"
 	{
 		"en"	"Invalid number of rounds, must be 1, 3 or 5"
