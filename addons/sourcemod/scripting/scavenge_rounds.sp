@@ -98,7 +98,7 @@ public Action RoundsRequest(int iClient, int iArgs)
 
 	if (!L4D2_IsScavengeMode())
 	{
-		CPrintToChat(iClient, "%t This command is only available in Scavenge mode", "Tag");
+		CPrintToChat(iClient, "%t %t", "Tag", "GameMode");
 		return Plugin_Handled;
 	}
 
