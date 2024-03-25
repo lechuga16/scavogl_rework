@@ -1,0 +1,69 @@
+"Phrases"
+{
+	"Tag"
+	{
+		"en"    "[{green}!{default}]"
+	}
+	"Disabled"
+	{
+		"en"	"Scavenge GameMode is disabled"
+		"es"	"Scavenge GameMode está desactivado"
+	}
+	"GameMode"
+	{
+		"en"	"This command is only available in Scavenge mode"
+		"es"	"Este comando solo está disponible en el modo Busqueda"
+	
+	}
+    "MenuTitle"
+    {
+        "en"    "Select mode:"
+        "es"    "Selecciona el modo:"
+    }
+	"ModeNoSupported"
+	{
+		"en"	"Current game mode not supported"
+		"es"	"Modo de juego actual no soportado"
+	}
+	"Error_InvalidMode"
+	{
+		"en"	"Error: Invalid mode"
+		"es"	"Error: Modo inválido"
+	}
+	"ChangeMode"
+	{
+		"en"	"Mode changed to:"
+		"es"	"Modo cambiado a:"
+	}
+	"Question"
+	{
+		"en"	"Change game mode to %s?"
+		"es"	"¿Cambiar el modo de juego a %s?"
+	}
+	"VoteSpect"
+	{
+		"en"	"Rounds voting isn't allowed for spectators."
+		"es"	"La votación de rondas no está permitida para los espectadores."
+	}
+	"VoteInProgress"
+	{
+		"en"	"A vote is already in progress"
+		"es"	"Ya hay una votación en curso"
+	
+	}
+	"MatchInProgress"
+	{
+		"en"	"You can't start a vote while the match is running"
+		"es"	"No puedes iniciar una votación mientras el partido está en curso"
+	}
+	"Usage"
+	{
+		"en"	"Usage:"
+		"es"	"Uso:"
+	}
+	"NoAccess"
+	{
+		"en"	"You don't have access to this command"
+		"es"	"No tienes acceso a este comando"
+	}
+}
