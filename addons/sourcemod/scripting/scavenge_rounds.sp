@@ -19,7 +19,8 @@
 ConVar
 	g_cvarDebug,
 	g_cvarEnable,
-	g_cvarRounds;
+	g_cvarRounds,
+	g_cvarRestartRound;
 
 Handle
 	g_hVote;
@@ -78,11 +79,13 @@ public void OnPluginStart()
 	LoadTranslation("scavenge_rounds.phrases");
 	CreateConVar("sm_scavenge_rounds_version", PLUGIN_VERSION, "Scavenge Rounds version", FCVAR_NOTIFY, true, 0.0);
 
-	g_cvarDebug	 = CreateConVar("sm_scavenge_rounds_debug", "0", "Enable debug", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	g_cvarEnable = CreateConVar("sm_scavenge_rounds_enable", "1", "Enable Scavenge Rounds", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	g_cvarRounds = CreateConVar("sm_scavenge_rounds", "5", "number of rounds (1, 3 and 5 allowed)", FCVAR_NOTIFY, true, 1.0, true, 5.0);
+	g_cvarDebug		   = CreateConVar("sm_scavenge_rounds_debug", "0", "Enable debug", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_cvarEnable	   = CreateConVar("sm_scavenge_rounds_enable", "1", "Enable Scavenge Rounds", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_cvarRounds	   = CreateConVar("sm_scavenge_rounds", "5", "number of rounds (1, 3 and 5 allowed)", FCVAR_NOTIFY, true, 1.0, true, 5.0);
+	g_cvarRestartRound = CreateConVar("sm_scavenge_restart_round", "1", "Restart round after finish match", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
-	HookEvent("round_start", RoundStart_Event, EventHookMode_Pre);
+	HookEvent("round_start", Event_RoundStart, EventHookMode_Pre);
+	HookEvent("scavenge_match_finished", Event_ScavMatchFinished, EventHookMode_Post);
 	g_cvarRounds.AddChangeHook(OnRoundsChange);
 
 	RegConsoleCmd("sm_scavrounds", RoundsRequest);
@@ -156,7 +159,7 @@ bool StartRoundVote(int iClient, int iRounds)
 	Format(sBuffer, sizeof(sBuffer), "%t", "Question", iRounds);
 	g_iVoteRounds = iRounds;
 
-	g_hVote = CreateBuiltinVote(VoteActionHandler, BuiltinVoteType_Custom_YesNo, BuiltinVoteAction_Cancel | BuiltinVoteAction_VoteEnd | BuiltinVoteAction_End);
+	g_hVote		  = CreateBuiltinVote(VoteActionHandler, BuiltinVoteType_Custom_YesNo, BuiltinVoteAction_Cancel | BuiltinVoteAction_VoteEnd | BuiltinVoteAction_End);
 	SetBuiltinVoteArgument(g_hVote, sBuffer);
 	SetBuiltinVoteInitiator(g_hVote, iClient);
 	SetBuiltinVoteResultCallback(g_hVote, MatchVoteResultHandler);
@@ -244,7 +247,7 @@ public void OnRoundsChange(ConVar Convar, const char[] sOldValue, const char[] s
 			C A L L B A C K   F U N C T I O N S
 ****************************************************************/
 
-void RoundStart_Event(Event event, const char[] name, bool dontBroadcast)
+void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
 	if (!g_cvarEnable.BoolValue || !L4D2_IsScavengeMode())
 		return;
@@ -258,9 +261,27 @@ void RoundStart_Event(Event event, const char[] name, bool dontBroadcast)
 	}
 }
 
+public void Event_ScavMatchFinished(Event event, const char[] name, bool dontBroadcast)
+{
+	if (!g_cvarEnable.BoolValue)
+		return;
+
+	CreateTimer(10.0, Timer_RestartMatch);
+}
+
 /*****************************************************************
 			P L U G I N   F U N C T I O N S
 *****************************************************************/
+
+Action Timer_RestartMatch(Handle Timer)
+{
+	if (g_cvarRestartRound.BoolValue)
+	{
+		L4D2_Rematch();
+	}
+
+	return Plugin_Handled;
+}
 
 /**
  * Changes the number of rounds in the game.
