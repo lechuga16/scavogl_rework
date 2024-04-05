@@ -30,7 +30,8 @@ bool
 	g_bReadyupAvailable = false;
 
 int
-	g_iVoteRounds = 0;
+	g_iVoteRounds = 0,
+	g_iTimerRestartMatch;
 
 /*****************************************************************
 			P L U G I N   I N F O
@@ -176,6 +177,7 @@ public void VoteActionHandler(Handle vote, BuiltinVoteAction action, int param1,
 		{
 			delete vote;
 			g_hVote = null;
+			g_iVoteRounds = 0;
 		}
 		case BuiltinVoteAction_Cancel:
 		{
@@ -193,7 +195,8 @@ public void MatchVoteResultHandler(Handle vote, int num_votes, int num_clients, 
 			if (item_info[i][BUILTINVOTEINFO_ITEM_VOTES] > (num_votes / 2))
 			{
 				DisplayBuiltinVotePass2(vote, "VotePassed");
-				ChangeRounds(g_iVoteRounds);
+				g_cvarRounds.SetInt(g_iVoteRounds);
+				g_iVoteRounds = 0;
 				return;
 			}
 		}
@@ -204,40 +207,27 @@ public void MatchVoteResultHandler(Handle vote, int num_votes, int num_clients, 
 
 public void OnPluginEnd()
 {
-	if (IsBuiltinVoteInProgress())
-	{
-		CancelBuiltinVote();
-		delete g_hVote;
-		g_hVote = null;
-	}
+	FindConVar("scavenge_match_finished_delay").RestoreDefault();
+	if (!IsBuiltinVoteInProgress())
+		return;
+
+	CancelBuiltinVote();
+	delete g_hVote;
+	g_hVote = null;
 }
 
 public void OnRoundsChange(ConVar Convar, const char[] sOldValue, const char[] sNewValue)
 {
-	int
-		iOldValue = StringToInt(sOldValue),
-		iNewValue = StringToInt(sNewValue);
+	int iNewValue = StringToInt(sNewValue);
 
 	switch (iNewValue)
 	{
-		case 1:
-		{
-			if (L4D2_IsScavengeMode())
-				ChangeRounds(iNewValue);
-		}
-		case 3:
-		{
-			if (L4D2_IsScavengeMode())
-				ChangeRounds(iNewValue);
-		}
-		case 5:
-		{
-			if (L4D2_IsScavengeMode())
-				ChangeRounds(iNewValue);
-		}
+		case 1: ChangeRounds(iNewValue);
+		case 3: ChangeRounds(iNewValue);
+		case 5: ChangeRounds(iNewValue);
 		default:
 		{
-			Convar.SetInt(iOldValue);
+			Convar.SetInt(StringToInt(sOldValue));
 			CPrintToChatAll("%t %t", "Tag", "InvalidRounds");
 		}
 	}
@@ -252,21 +242,23 @@ void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 	if (!g_cvarEnable.BoolValue || !L4D2_IsScavengeMode())
 		return;
 
-	if (g_bConfoglAvailable && LGO_IsMatchModeLoaded())
-	{
-		if (GameRules_GetProp("m_nRoundLimit") == g_cvarRounds.IntValue)
-			return;
+	if (!g_bConfoglAvailable || !LGO_IsMatchModeLoaded())
+		return;
 
-		GameRules_SetProp("m_nRoundLimit", g_cvarRounds.IntValue);
-	}
+	if (GameRules_GetProp("m_nRoundLimit") == g_cvarRounds.IntValue)
+		return;
+
+	GameRules_SetProp("m_nRoundLimit", g_cvarRounds.IntValue);
 }
 
 public void Event_ScavMatchFinished(Event event, const char[] name, bool dontBroadcast)
 {
-	if (!g_cvarEnable.BoolValue)
+	if (!g_cvarEnable.BoolValue || !g_cvarRestartRound.BoolValue)
 		return;
 
-	CreateTimer(10.0, Timer_RestartMatch);
+	FindConVar("scavenge_match_finished_delay").SetInt(30);
+	g_iTimerRestartMatch = 10;
+	CreateTimer(1.0, Timer_RestartMatch, _, TIMER_REPEAT);
 }
 
 /*****************************************************************
@@ -275,12 +267,16 @@ public void Event_ScavMatchFinished(Event event, const char[] name, bool dontBro
 
 Action Timer_RestartMatch(Handle Timer)
 {
-	if (g_cvarRestartRound.BoolValue)
+	if(g_iTimerRestartMatch == 0)
 	{
 		L4D2_Rematch();
+		return Plugin_Stop;
 	}
+	else if(g_iTimerRestartMatch < 4)
+		CPrintToChatAll("%t %t", "Tag", "MatchRestarted", g_iTimerRestartMatch);
 
-	return Plugin_Handled;
+	g_iTimerRestartMatch--;
+	return Plugin_Continue;
 }
 
 /**

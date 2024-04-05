@@ -56,4 +56,9 @@
 		"en"	"Changing the number of rounds ..."
 		"es"	"Cambiando el número de rondas ..."
 	}
+	"MatchRestarted"
+	{
+		"en"	"The match is restarted in {blue}%d{default}"
+		"es"	"El partido se reinicia en {blue}%d{default}"
+	}
 }
