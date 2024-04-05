@@ -24,9 +24,56 @@
 #define _readyup_included_
 
 /**
+ * Called before ready up is initiated
+ */
+forward void OnReadyUpInitiatePre();
+
+/**
+ * Called when ready up is initiated
+ */
+forward void OnReadyUpInitiate();
+
+/**
+ * Called before the live countdown starts
+ */
+forward void OnRoundLiveCountdownPre();
+
+/**
+ * Called when the live countdown starts
+ */
+forward void OnRoundLiveCountdown();
+
+/**
+ * Called before the live countdown ends and the round goes live
+ */
+forward void OnRoundIsLivePre();
+
+/**
  * Called when the live countdown ends and the round goes live
  */
 forward void OnRoundIsLive();
+
+/**
+ * Called when the live countdown has been cancelled
+ * 
+ * @param client 			The client index.
+ * @param sDisruptReason 	The reason why cancel the live countdown
+ */
+forward void OnReadyCountdownCancelled(int client, char sDisruptReason);
+
+/**
+ * Called when client is ready
+ * 
+ * @param client 			The client index.
+ */
+forward void OnPlayerReady(int client);
+
+/**
+ * Called when client is unready
+ * 
+ * @param client 			The client index.
+ */
+forward void OnPlayerUnready(int client);
 
 /**
  * Returns the index of a item in the footer array.
@@ -75,19 +122,20 @@ native int AddStringToReadyFooter(const char[] footer);
 native bool IsInReady();
 
 /**
- * If this in-game and fully connected client is a caster or not
+ * Whether or not the player is currently readied up
  *
- * @return          True if this is a registered caster
+ * @param client    Client to check.
+ * @return          True if the player is ready.
  */
-native bool IsClientCaster(int client);
+native bool IsReady(int client);
 
 /**
- * If this Steam ID is a registered caster or not
+ * @brief Toggle ready panel of one target or all clients.
+ * @remarks Always return false if currently not in ready-up phase.
  *
- * @param           String containing the user's auth id
- * @return          True if this is a registered caster
+ * @return          True if no target if specified, or previous ready panel state of target.
  */
-native bool IsIDCaster(const char[] AuthID);
+native bool ToggleReadyPanel(bool show, int target = 0);
 
 public SharedPlugin __pl_readyup =
 {
@@ -108,9 +156,7 @@ public void __pl_readyup_SetNTVOptional()
 	MarkNativeAsOptional("EditFooterStringAtIndex");
 	MarkNativeAsOptional("AddStringToReadyFooter");
 	MarkNativeAsOptional("IsInReady");
-	MarkNativeAsOptional("IsClientCaster");
-	MarkNativeAsOptional("IsIDCaster");
+	MarkNativeAsOptional("IsReady");
+	MarkNativeAsOptional("ToggleReadyPanel");
 }
 #endif
-
-// vim: ft=sourcepawn et sw=8
