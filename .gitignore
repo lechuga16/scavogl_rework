@@ -76,8 +76,4 @@ addons/sourcemod/scripting/include/left4dhooks_anim.inc
 addons/sourcemod/scripting/include/left4dhooks_lux_library.inc
 addons/sourcemod/scripting/include/left4dhooks_silver.inc
 addons/sourcemod/scripting/include/left4dhooks_stocks.inc
-addons/sourcemod/scripting/include/left4dhooks.inc
-addons/sourcemod/scripting/include/left4dhooks.inc
-addons/sourcemod/scripting/include/left4dhooks.inc
-addons/sourcemod/scripting/include/left4dhooks.inc
 addons/sourcemod/scripting/include/readyup.inc
