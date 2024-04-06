@@ -86,7 +86,7 @@
 #define PLUGIN_VERSION "2.8"
 #define DATA_PATH	"data/l4d2_scav_gascan_selfburn.cfg"
 
-#define DEBUG 1
+#define DEBUG 0
 #define MAX_EDICTS 2048
 
 ConVar
