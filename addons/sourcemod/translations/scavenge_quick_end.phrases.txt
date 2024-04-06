@@ -1,0 +1,61 @@
+"Phrases"
+{
+	"Tag"
+	{
+		"en"		"[{olive}!{default}]"
+	}
+
+	"PrintRoundTime"
+	{
+		"#format"	"{1:d},{2:d},{3:d},{4:.2f}"
+		"en"		"Round {orange}{1}{default} ({blue}1st half{default}): {orange}{2} cans {default}in {orange}{3}{default}:{orange}{4}"
+		"chi"		"第{orange}{1}{default}局 ({blue}上半轮{default}): {orange}{2}桶 {default}用时: {orange}{3}{default}:{orange}{4}"
+		"es"		"Ronda {orange}{1}{default} ({blue}1ra mitad{default}): {orange}{2} latas {default}en {orange}{3}{default}:{orange}{4}"
+	}
+
+	"PrintRoundTimeInHalf"
+	{
+		"#format"	"{1:d},{2:d},{3:d},{4:.2f}"
+		"en"		"Round {orange}{1}{default} ({red}2nd half{default}): {orange}{2} cans {default}in {orange}{3}{default}:{orange}{4}"
+		"chi"		"第{orange}{1}{default}局 ({red}下半轮{default}): {orange}{2}桶 {default}已用时: {orange}{3}{default}:{orange}{4}"
+		"es"		"Ronda {orange}{1}{default} ({red}2da mitad{default}): {orange}{2} latas {default}en {orange}{3}{default}:{orange}{4}"
+	}
+
+	"PrintRoundEndTime"
+	{
+		"#format"	"{1:d},{2:d},{3:d},{4:.2f}"
+		"en"		"Round {orange}{1}{default} ({blue}1st half{default}): {orange}{2} cans {default}in {orange}{3}{default}:{orange}{4}"
+		"chi"		"第{orange}{1}{default}局 ({blue}上半轮{default}): {orange}{2}桶 {default}用时: {orange}{3}{default}:{orange}{4}"
+		"es"		"Ronda {orange}{1}{default} ({blue}1ra mitad{default}): {orange}{2} latas {default}en {orange}{3}{default}:{orange}{4}"
+	}
+
+	"PrintRoundEndTimeInHalf"
+	{
+		"#format"	"{1:d},{2:d},{3:d},{4:.2f}"
+		"en"		"Round {orange}{1}{default} ({red}2nd half{default}): {orange}{2} cans {default}in {orange}{3}{default}:{orange}{4}"
+		"chi"		"第{orange}{1}{default}局 ({red}下半轮{default}): {orange}{2}桶 {default}用时: {orange}{3}{default}:{orange}{4}"
+		"es"		"Ronda {orange}{1}{default} ({red}2da mitad{default}): {orange}{2} latas {default}en {orange}{3}{default}:{orange}{4}"
+	}
+
+	"RoundEndEarly_Type1"
+	{
+		"en"		"Round Ended : {blue}Survivors{default} reached their {orange}opponents'{default} score with less time used."
+		"chi"		"该回合提前结束: {blue}生还者{default}达到{orange}对方的{default}团队分数所用时间更少."
+		"es"		"Ronda Terminada: {blue}Supervivientes{default} alcanzaron la puntuación de sus {orange}oponentes{default} con menos tiempo."
+	}
+
+	"RoundEndEarly_Type2"
+	{
+
+		"en"		"Round Ended: {blue}Survivors{default} failed to reach their {orange}opponents'{default} score in the same time."
+		"chi"		"该回合提前结束: {blue}生还者{default}在相同的时间内未能达到{orange}对方{default}的团队分数."
+		"es"		"Ronda Terminada: {blue}Supervivientes{default} no lograron alcanzar la puntuación de sus {orange}oponentes{default} en el mismo tiempo."
+	}
+
+	"RoundEndEarly_Type3"
+	{
+		"en"		"Round Ended: {blue}Survivors{default} survived longer, or {red}Infected{default} didn't score last round."
+		"chi"		"该回合提前结束: {blue}生还者{default}生存了更长的时间, 或{red}感染者{default}团队在上一局没有得分."
+		"es"		"Ronda Terminada: {blue}Supervivientes{default} sobrevivieron más tiempo, o los {red}Infectados{default} no anotaron en la última ronda."
+	}
+}

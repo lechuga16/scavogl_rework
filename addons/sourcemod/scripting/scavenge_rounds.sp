@@ -27,8 +27,7 @@ Handle
 
 bool
 	g_bConfoglAvailable = false,
-	g_bReadyupAvailable = false,
-	g_bFixGascanSpawn = true;
+	g_bReadyupAvailable = false;
 
 int
 	g_iVoteRounds = 0,
@@ -237,19 +236,6 @@ public void OnRoundsChange(ConVar Convar, const char[] sOldValue, const char[] s
 /****************************************************************
 			C A L L B A C K   F U N C T I O N S
 ****************************************************************/
-
-public void OnRoundLiveCountdown()
-{
-	if (!g_cvarEnable.BoolValue || !L4D2_IsScavengeMode())
-		return;
-
-	if (g_bFixGascanSpawn)
-	{
-		g_bFixGascanSpawn = false;
-		L4D2_SpawnAllScavengeItems();
-		PrintDebug("Gascan spawn fixed");
-	}
-}
 
 void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
