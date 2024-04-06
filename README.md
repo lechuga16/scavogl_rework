@@ -1,4 +1,4 @@
-# Scavogl Rework V2.3.1
+# Scavogl Rework v2.3.2
 
 [EN] [translation](https://translate.google.com/translate?sl=es&tl=en&u=https://github.com/lechuga16/scavogl_rework)
 
