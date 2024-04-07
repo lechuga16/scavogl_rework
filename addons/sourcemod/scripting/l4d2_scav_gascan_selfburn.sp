@@ -82,6 +82,9 @@
 #include <sourcemod>
 #include <sdktools>
 #include <colors>
+#undef REQUIRE_PLUGIN
+#include <readyup>
+#define REQUIRE_PLUGIN
 
 #define PLUGIN_VERSION "2.8"
 #define DATA_PATH	"data/l4d2_scav_gascan_selfburn.cfg"
@@ -189,6 +192,10 @@ Action Timer_DetectGascan(Handle hTimer)
 #if DEBUG
 	PrintToServer("Timer started.");
 #endif
+
+	if(IsInReady())
+		return Plugin_Continue;
+
 	FindMisplacedCans();
 	return Plugin_Continue;
 }
