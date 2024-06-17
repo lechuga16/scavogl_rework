@@ -1,0 +1,47 @@
+"Phrases"
+{
+	"Tag"
+	{
+		"es"		"[{olive}!{default}]"
+	}
+
+	"PrintRoundTime"
+	{
+		"#format"	"{1:d},{2:d},{3:d},{4:.2f}"
+		"es"		"Ronda {orange}{1}{default} ({blue}1ra mitad{default}): {orange}{2} latas {default}en {orange}{3}{default}:{orange}{4}"
+	}
+
+	"PrintRoundTimeInHalf"
+	{
+		"#format"	"{1:d},{2:d},{3:d},{4:.2f}"
+		"es"		"Ronda {orange}{1}{default} ({red}2da mitad{default}): {orange}{2} latas {default}en {orange}{3}{default}:{orange}{4}"
+	}
+
+	"PrintRoundEndTime"
+	{
+		"#format"	"{1:d},{2:d},{3:d},{4:.2f}"
+		"es"		"Ronda {orange}{1}{default} ({blue}1ra mitad{default}): {orange}{2} latas {default}en {orange}{3}{default}:{orange}{4}"
+	}
+
+	"PrintRoundEndTimeInHalf"
+	{
+		"#format"	"{1:d},{2:d},{3:d},{4:.2f}"
+		"es"		"Ronda {orange}{1}{default} ({red}2da mitad{default}): {orange}{2} latas {default}en {orange}{3}{default}:{orange}{4}"
+	}
+
+	"RoundEndEarly_Type1"
+	{
+		"es"		"Ronda Terminada: {blue}Supervivientes{default} alcanzaron la puntuación de sus {orange}oponentes{default} con menos tiempo."
+	}
+
+	"RoundEndEarly_Type2"
+	{
+
+		"es"		"Ronda Terminada: {blue}Supervivientes{default} no lograron alcanzar la puntuación de sus {orange}oponentes{default} en el mismo tiempo."
+	}
+
+	"RoundEndEarly_Type3"
+	{
+		"es"		"Ronda Terminada: {blue}Supervivientes{default} sobrevivieron más tiempo, o los {red}Infectados{default} no anotaron en la última ronda."
+	}
+}

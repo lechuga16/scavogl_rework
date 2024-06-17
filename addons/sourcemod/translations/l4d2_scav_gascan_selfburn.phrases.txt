@@ -8,22 +8,16 @@
 	"Ignite"
 	{
 		"en"		"Gascan out of bound! {orange}Ignited{default}!"
-		"chi"		"油桶超界! {orange}已点燃{default}!"
-		"es"		"¡Gascan fuera de límites! ¡{orange}Encendido{default}!"
 	}
 
 	"IgniteInLimit"
 	{
 		"#format"	"{1:d},{2:d}"		//1: current burned gascan count. 2: max burned count.
 		"en"		"Gascan out of bound! {orange}Ignited{default}! [{olive}{1}{default} / {orange}{2}{default}]"
-		"chi"		"油桶超界! {orange}已点燃{default}! [{olive}{1}{default} / {orange}{2}{default}]"
-		"es"		"¡Gascan fuera de límites! ¡{orange}Encendido{default}! [{olive}{1}{default} / {orange}{2}{default}]"
 	}
 
 	"ReachedLimit"
 	{
 		"en"		"Out-boundray gascan reached its maxnuim number, {orange}no more{default} gascans will be ignited now!"
-		"chi"		"已达最大油桶自燃数, 将{orange}不会再有任何{default}油桶点燃!"
-		"es"		"¡El gascan fuera de límites ha alcanzado su número máximo, {orange}no más{default} gascans se encenderán ahora!"
 	}
 }

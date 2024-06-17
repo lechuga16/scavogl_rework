@@ -1,0 +1,20 @@
+"Phrases"
+{
+	"Tag"
+	{
+		"chi"		"[{olive}!{default}]"
+	}
+	"Ignite"
+	{
+		"chi"		"油桶超界! {orange}已点燃{default}!"
+	}
+	"IgniteInLimit"
+	{
+		"#format"	"{1:d},{2:d}"		//1: current burned gascan count. 2: max burned count.
+		"chi"		"油桶超界! {orange}已点燃{default}! [{olive}{1}{default} / {orange}{2}{default}]"
+	}
+	"ReachedLimit"
+	{
+		"chi"		"已达最大油桶自燃数, 将{orange}不会再有任何{default}油桶点燃!"
+	}
+}

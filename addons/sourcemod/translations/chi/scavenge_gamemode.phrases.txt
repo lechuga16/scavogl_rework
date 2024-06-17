@@ -1,0 +1,55 @@
+"Phrases"
+{
+	"Tag"
+	{
+		"chi"	"[{green}!{default}]"
+	}
+	"Disabled"
+	{
+		"chi"	"Scavenge模式已禁用"
+	}
+	"GameMode"
+	{
+		"chi"	"此命令仅在Scavenge模式下可用"
+	}
+    "MenuTitle"
+    {
+		"chi"	"选择模式："
+    }
+	"ModeNoSupported"
+	{
+		"chi"	"当前游戏模式不支持"
+	}
+	"Error_InvalidMode"
+	{
+		"chi"	"错误：无效模式"
+	}
+	"ChangeMode"
+	{
+		"chi"	"模式已更改为："
+	}
+	"Question"
+	{
+		"chi"	"更改游戏模式为 %s？"
+	}
+	"VoteSpect"
+	{
+		"chi"	"观众不能投票。"
+	}
+	"VoteInProgress"
+	{
+		"chi"	"投票已经在进行中"
+	}
+	"MatchInProgress"
+	{
+		"chi"	"比赛进行中，不能发起投票"
+	}
+	"Usage"
+	{
+		"chi"	"用法："
+	}
+	"NoAccess"
+	{
+		"chi"	"您没有权限使用此命令"
+	}
+}

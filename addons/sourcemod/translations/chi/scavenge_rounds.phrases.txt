@@ -1,0 +1,52 @@
+"Phrases"
+{
+	"Tag"
+	{
+		"chi"	"[{green}!{default}]"
+	}
+	"Disabled"
+	{
+		"chi"	"Scavenge Rounds 已禁用"
+	}
+	"IsScavengeMode"
+	{
+		"chi"	"此命令仅在Scavenge模式下可用"
+	}
+	"RoundsEquals"
+	{
+		"chi"	"回合数已经是%d"
+	}
+	"GameMode"
+	{
+		"chi"	"此命令仅在Scavenge模式下可用"
+	}
+	"InvalidRounds"
+	{
+		"chi"	"无效的回合数，必须是1、3或5"
+	}
+	"VoteSpect"
+	{
+		"chi"	"观众不能投票"
+	}
+	"VoteInProgress"
+	{
+		"chi"	"已经有一个投票正在进行中"
+	
+	}
+	"MatchInProgress"
+	{
+		"chi"	"比赛进行中，不能开始投票"
+	}
+	"Question"
+	{
+		"chi"	"将回合数更改为%d？"
+	}
+	"VotePassed"
+	{
+		"chi"	"更改回合数..."
+	}
+	"MatchRestarted"
+	{
+		"chi"	"比赛在{blue}%d{default}秒后重新开始"
+	}
+}

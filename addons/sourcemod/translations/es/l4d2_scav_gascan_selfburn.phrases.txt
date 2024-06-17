@@ -1,0 +1,23 @@
+"Phrases"
+{
+	"Tag"
+	{
+		"es"		"[{olive}!{default}]"
+	}
+
+	"Ignite"
+	{
+		"es"		"¡Gascan fuera de límites! ¡{orange}Encendido{default}!"
+	}
+
+	"IgniteInLimit"
+	{
+		"#format"	"{1:d},{2:d}"		//1: current burned gascan count. 2: max burned count.
+		"es"		"¡Gascan fuera de límites! ¡{orange}Encendido{default}! [{olive}{1}{default} / {orange}{2}{default}]"
+	}
+
+	"ReachedLimit"
+	{
+		"es"		"¡El gascan fuera de límites ha alcanzado su número máximo, {orange}no más{default} gascans se encenderán ahora!"
+	}
+}

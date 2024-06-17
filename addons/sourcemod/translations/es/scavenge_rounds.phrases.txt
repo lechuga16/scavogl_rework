@@ -1,0 +1,53 @@
+"Phrases"
+{
+	"Tag"
+	{
+		"es"    "[{green}!{default}]"
+	}
+	"Disabled"
+	{
+		"es"	"Scavenge Rounds está desactivado"
+	}
+	"IsScavengeMode"
+	{
+		"es"	"Este comando solo está disponible en el modo Busqueda"
+	}
+	"RoundsEquals"
+	{
+		"es"	"El número de rondas ya es %d"
+	}
+	"GameMode"
+	{
+		"es"	"Este comando solo está disponible en el modo Busqueda"
+	
+	}
+	"InvalidRounds"
+	{
+		"es"	"Número de rondas inválido, debe ser 1, 3 o 5"
+	}
+	"VoteSpect"
+	{
+		"es"	"La votación de rondas no está permitida para los espectadores."
+	}
+	"VoteInProgress"
+	{
+		"es"	"Ya hay una votación en curso"
+	
+	}
+	"MatchInProgress"
+	{
+		"es"	"No puedes iniciar una votación mientras el partido está en curso"
+	}
+	"Question"
+	{
+		"es"	"¿Cambiar el número de rondas a %d?"
+	}
+	"VotePassed"
+	{
+		"es"	"Cambiando el número de rondas ..."
+	}
+	"MatchRestarted"
+	{
+		"es"	"El partido se reinicia en {blue}%d{default}"
+	}
+}

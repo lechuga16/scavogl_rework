@@ -1,0 +1,47 @@
+"Phrases"
+{
+	"Tag"
+	{
+		"chi"		"[{olive}!{default}]"
+	}
+
+	"PrintRoundTime"
+	{
+		"#format"	"{1:d},{2:d},{3:d},{4:.2f}"
+		"chi"		"第{orange}{1}{default}局 ({blue}上半轮{default}): {orange}{2}桶 {default}用时: {orange}{3}{default}:{orange}{4}"
+	}
+
+	"PrintRoundTimeInHalf"
+	{
+		"#format"	"{1:d},{2:d},{3:d},{4:.2f}"
+		"chi"		"第{orange}{1}{default}局 ({red}下半轮{default}): {orange}{2}桶 {default}已用时: {orange}{3}{default}:{orange}{4}"
+	}
+
+	"PrintRoundEndTime"
+	{
+		"#format"	"{1:d},{2:d},{3:d},{4:.2f}"
+		"chi"		"第{orange}{1}{default}局 ({blue}上半轮{default}): {orange}{2}桶 {default}用时: {orange}{3}{default}:{orange}{4}"
+	}
+
+	"PrintRoundEndTimeInHalf"
+	{
+		"#format"	"{1:d},{2:d},{3:d},{4:.2f}"
+		"chi"		"第{orange}{1}{default}局 ({red}下半轮{default}): {orange}{2}桶 {default}用时: {orange}{3}{default}:{orange}{4}"
+	}
+
+	"RoundEndEarly_Type1"
+	{
+		"chi"		"该回合提前结束: {blue}生还者{default}达到{orange}对方的{default}团队分数所用时间更少."
+	}
+
+	"RoundEndEarly_Type2"
+	{
+
+		"chi"		"该回合提前结束: {blue}生还者{default}在相同的时间内未能达到{orange}对方{default}的团队分数."
+	}
+
+	"RoundEndEarly_Type3"
+	{
+		"chi"		"该回合提前结束: {blue}生还者{default}生存了更长的时间, 或{red}感染者{default}团队在上一局没有得分."
+	}
+}
