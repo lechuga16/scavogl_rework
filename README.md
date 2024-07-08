@@ -74,3 +74,4 @@
 - https://github.com/HouseHse/Scavogl
 - https://code.google.com/archive/p/scavogl/
 - https://github.com/Target5150/MoYu_Server_Stupid_Plugins/
+- https://github.com/blueblur0730/modified-plugins
