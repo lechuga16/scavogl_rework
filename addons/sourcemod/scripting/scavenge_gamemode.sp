@@ -14,7 +14,7 @@
 			G L O B A L   V A R S
 *****************************************************************/
 
-#define PLUGIN_VERSION "1.0"
+#define PLUGIN_VERSION "1.0.1"
 #define CFG_VERSION	   "v2.3.2"
 #define CONSOLE		   0
 
@@ -22,6 +22,7 @@ ConVar
 	g_cvarDebug,
 	g_cvarEnable,
 	g_cvarPrintCvar,
+	g_cvarCFGName,
 
 	z_versus_hunter_limit,
 	z_versus_boomer_limit,
@@ -121,6 +122,7 @@ public void OnPluginStart()
 	g_cvarDebug			   = CreateConVar("sm_scavenge_gamemode_debug", "0", "Enable debug", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_cvarEnable		   = CreateConVar("sm_scavenge_gamemode_enable", "1", "Enable Scavenge Rounds", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_cvarPrintCvar		   = CreateConVar("sm_scavenge_gamemode_printcvar", "1", "Print cvar changes", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_cvarCFGName		   = CreateConVar("sm_scavenge_gamemode_forcename", "0", "Force the convar l4d_ready_cfg_name according to the game mode.", FCVAR_NOTIFY, true, 0.0, true, 1.0);	
 
 	z_versus_hunter_limit  = FindConVar("z_versus_hunter_limit");
 	z_versus_boomer_limit  = FindConVar("z_versus_boomer_limit");
@@ -246,7 +248,9 @@ public void OnPluginEnd()
 	z_versus_jockey_limit.RestoreDefault();
 	z_versus_charger_limit.RestoreDefault();
 	z_versus_spitter_limit.RestoreDefault();
-	FindConVar("l4d_ready_cfg_name").RestoreDefault();
+
+	if (g_cvarCFGName.BoolValue)
+		FindConVar("l4d_ready_cfg_name").RestoreDefault();
 }
 
 /*****************************************************************
@@ -490,8 +494,11 @@ void ChangeCFGName(GameMode gm)
 		strcopy(g_sConfigName, sizeof(g_sConfigName), sScavMode[gm.mode]);
 	}
 
-	PrintDebug("CFG Name: %s | Mode Name: %s", sConfigName, g_sConfigName);
-	FindConVar("l4d_ready_cfg_name").SetString(sConfigName);
+	if (g_cvarCFGName.BoolValue)
+	{
+		PrintDebug("CFG Name: %s | Mode Name: %s", sConfigName, g_sConfigName);
+		FindConVar("l4d_ready_cfg_name").SetString(sConfigName);
+	}
 }
 
 /**
