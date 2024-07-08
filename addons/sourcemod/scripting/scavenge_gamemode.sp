@@ -122,7 +122,7 @@ public void OnPluginStart()
 	g_cvarDebug			   = CreateConVar("sm_scavenge_gamemode_debug", "0", "Enable debug", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_cvarEnable		   = CreateConVar("sm_scavenge_gamemode_enable", "1", "Enable Scavenge Rounds", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_cvarPrintCvar		   = CreateConVar("sm_scavenge_gamemode_printcvar", "1", "Print cvar changes", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	g_cvarCFGName		   = CreateConVar("sm_scavenge_gamemode_forcename", "0", "Force the convar l4d_ready_cfg_name according to the game mode.", FCVAR_NOTIFY, true, 0.0, true, 1.0);	
+	g_cvarCFGName		   = CreateConVar("sm_scavenge_gamemode_forcename", "1", "Force the convar l4d_ready_cfg_name according to the game mode.", FCVAR_NOTIFY, true, 0.0, true, 1.0);	
 
 	z_versus_hunter_limit  = FindConVar("z_versus_hunter_limit");
 	z_versus_boomer_limit  = FindConVar("z_versus_boomer_limit");
