@@ -113,6 +113,10 @@ char
 Handle
 	g_hGasCanTimer;
 
+bool
+	g_bReadyup,
+	g_bLateload;
+
 enum struct CoordinateInfo
 {
 	float z_min;
@@ -137,6 +141,29 @@ public Plugin myinfo =
 	url	= "https://github.com/blueblur0730/modified-plugins"
 };
 
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	g_bLateload = late;
+	return APLRes_Success;
+}
+
+public void OnAllPluginsLoaded()
+{
+	g_bReadyup = LibraryExists("readyup");
+}
+
+public void OnLibraryRemoved(const char[] sName)
+{
+	if (StrEqual(sName, "readyup"))
+		g_bReadyup = false;
+}
+
+public void OnLibraryAdded(const char[] sName)
+{
+	if (StrEqual(sName, "readyup"))
+		g_bReadyup = true;
+}
+
 public void OnPluginStart()
 {
 	CreateConVar("l4d2_scav_gascan_selfburn_version", PLUGIN_VERSION, "Plgin version", FCVAR_NOTIFY | FCVAR_DONTRECORD);
@@ -154,6 +181,11 @@ public void OnPluginStart()
 	BuildPath(Path_SM, g_sPath, sizeof(g_sPath), DATA_PATH);
 	HookEvent("round_start", Event_RoundStart, EventHookMode_PostNoCopy);
 	LoadTranslation("l4d2_scav_gascan_selfburn.phrases");
+
+	if (g_bLateload)
+		return;
+	
+	g_bReadyup = LibraryExists("readyup");
 }
 
 public void OnPluginEnd()
@@ -193,7 +225,7 @@ Action Timer_DetectGascan(Handle hTimer)
 	PrintToServer("Timer started.");
 #endif
 
-	if(IsInReady())
+	if(g_bReadyup && IsInReady())
 		return Plugin_Continue;
 
 	FindMisplacedCans();
