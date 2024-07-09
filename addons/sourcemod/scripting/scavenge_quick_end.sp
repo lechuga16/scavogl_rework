@@ -31,7 +31,7 @@ EndType g_eEndType;
 
 // GetRoundTime(&minutes, &seconds, team)
 #define GetRoundTime(%0,%1,%2) %1 = GetScavengeRoundDuration(%2); %0 = RoundToFloor(%1)/60; %1 -= 60 * %0
-
+ 
 public Plugin myinfo =
 {
 	name		= "[L4D2] Scavenge Quick End",
@@ -99,7 +99,7 @@ public void Event_RoundEnd(Event hEvent, const char[] name, bool dontBroadcast)
 
 public void Event_ScavRoundStart(Event hEvent, const char[] name, bool dontBroadcast)
 {
-	g_bInSecondHalf		= !hEvent.GetBool("firsthalf");
+	g_bInSecondHalf		= view_as<bool>(GameRules_GetProp("m_bInSecondHalfOfRound"));
 	g_bInScavengeRound	= true;
 	g_flDefaultLossTime = 0.0;
 	g_eEndType			= QE_None;
@@ -152,7 +152,7 @@ public void PrintRoundEndTimeData(bool bSecondHalf)
 {
 	int	  iLastRoundMinutes;
 	float fLastRoundTime;
-	int iRoundNumber = GameRules_GetProp("m_nRoundNumber");
+	int	  iRoundNumber = GameRules_GetProp("m_nRoundNumber");
 
 	if (bSecondHalf)
 	{
@@ -194,7 +194,6 @@ public Action EndRoundEarlyOnTime(int client)
 //-----------
 //	Stocks
 //-----------
-
 
 /*
  * Returns the team score of this round.
