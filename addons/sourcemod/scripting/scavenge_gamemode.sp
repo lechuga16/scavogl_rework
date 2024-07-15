@@ -15,7 +15,7 @@
 *****************************************************************/
 
 #define PLUGIN_VERSION "1.0.1"
-#define CFG_VERSION	   "v2.3.2"
+#define CFG_VERSION	   "v2.3.3"
 #define CONSOLE		   0
 
 ConVar
