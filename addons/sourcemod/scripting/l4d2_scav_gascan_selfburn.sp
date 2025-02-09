@@ -320,8 +320,6 @@ void ParseMapCoordinateInfo(const char[] sMapName)
 		else
 			g_hCoordinateMap.SetValue("y_min", Kv.GetFloat("width_ylimit_min"));
 	}
-	else
-		LogError("Couldn't find map name '%s' in the config file!", sMapName);
 
 	delete Kv;
 }

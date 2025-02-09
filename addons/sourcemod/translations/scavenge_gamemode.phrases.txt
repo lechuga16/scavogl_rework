@@ -2,54 +2,55 @@
 {
 	"Tag"
 	{
-		"en"    "[{green}!{default}]"
+		"en"		"[{green}!{default}]"
 	}
 	"Disabled"
 	{
-		"en"	"Scavenge GameMode is disabled"
+		"en"		"Scavenge GameMode is disabled"
 	}
 	"GameMode"
 	{
-		"en"	"This command is only available in Scavenge mode"
+		"en"		"This command is only available in Scavenge mode"
 	}
-    "MenuTitle"
-    {
-        "en"    "Select mode:"
-    }
+	"MenuTitle"
+	{
+		"en"		"Select mode:"
+	}
 	"ModeNoSupported"
 	{
-		"en"	"Current game mode not supported"
+		"en"		"Current game mode not supported"
 	}
 	"Error_InvalidMode"
 	{
-		"en"	"Error: Invalid mode"
+		"en"		"Error: Invalid mode"
 	}
 	"ChangeMode"
 	{
-		"en"	"Mode changed to:"
+		"#format"	"{1:s}"
+		"en"		"Mode changed to: {blue}{1}{default}"
 	}
 	"Question"
 	{
-		"en"	"Change game mode to %s?"
+		"#format"	"{1:s}"
+		"en"		"Change game mode to {1}?"
 	}
 	"VoteSpect"
 	{
-		"en"	"Rounds voting isn't allowed for spectators."
+		"en"		"Rounds voting isn't allowed for spectators."
 	}
 	"VoteInProgress"
 	{
-		"en"	"A vote is already in progress"
+		"en"		"A vote is already in progress"
 	}
 	"MatchInProgress"
 	{
-		"en"	"You can't start a vote while the match is running"
+		"en"		"You can't start a vote while the match is running"
 	}
 	"Usage"
 	{
-		"en"	"Usage:"
+		"en"		"Usage:"
 	}
 	"NoAccess"
 	{
-		"en"	"You don't have access to this command"
-	}
-}
+		"en"		"You don't have access to this command"
+}}

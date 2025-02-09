@@ -40,7 +40,7 @@ int
 public Plugin myinfo =
 {
 	name		= "Scavenge Rounds",
-	author		= "Lechuga",
+	author		= "lechuga",
 	description = "Allows you to adjust the number of rounds",
 	version		= PLUGIN_VERSION,
 	url			= "https://github.com/lechuga16/scavogl_rework"
