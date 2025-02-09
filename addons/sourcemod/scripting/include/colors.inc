@@ -14,6 +14,7 @@
 #define CSOURCETV				1 // Enable print for SourceTV
 
 #define MAX_MESSAGE_LENGTH		250
+
 #define MAX_COLORS				12
 
 #define SERVER_INDEX			0
@@ -636,7 +637,7 @@ stock void CSetupProfile()
 		/* hl2mp profile is based on mp_teamplay convar */
 		static ConVar hCvarMpTeamPlay = null;
 		if (hCvarMpTeamPlay == null) {
-			hCvarMpTeamPlay = FindConVar("mp_teamplay")
+			hCvarMpTeamPlay = FindConVar("mp_teamplay");
 		}
 
 		if (hCvarMpTeamPlay.BoolValue) {

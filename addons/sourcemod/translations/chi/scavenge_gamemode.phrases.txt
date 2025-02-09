@@ -26,11 +26,13 @@
 	}
 	"ChangeMode"
 	{
-		"chi"	"模式已更改为："
+		"#format"	"{1:s}"
+		"chi"	"模式已更改为：{blue}{1}{default}"
 	}
 	"Question"
 	{
-		"chi"	"更改游戏模式为 %s？"
+		"#format"	"{1:s}"
+		"chi"	"更改游戏模式为 {1}？"
 	}
 	"VoteSpect"
 	{

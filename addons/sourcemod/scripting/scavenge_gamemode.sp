@@ -14,8 +14,7 @@
 			G L O B A L   V A R S
 *****************************************************************/
 
-#define PLUGIN_VERSION "1.0.1"
-#define CFG_VERSION	   "v2.3.3"
+#define PLUGIN_VERSION "1.1"
 #define CONSOLE		   0
 
 ConVar
@@ -24,6 +23,7 @@ ConVar
 	g_cvarPrintCvar,
 	g_cvarCFGName,
 
+	l4d_ready_cfg_name,
 	z_versus_hunter_limit,
 	z_versus_boomer_limit,
 	z_versus_smoker_limit,
@@ -92,26 +92,32 @@ GameMode
 /*****************************************************************
 			P L U G I N   I N F O
 *****************************************************************/
-
 public Plugin myinfo =
 {
 	name		= "Scavenge GameMode",
-	author		= "Lechuga",
+	author		= "lechuga",
 	description = "Manages cvar related to the game mode and allows changing it",
 	version		= PLUGIN_VERSION,
-	url			= "https://github.com/lechuga16/scavogl_rework"
+	url			= "https://github.com/AoC-Gamers/scavogl_rework"
 };
 
 /*****************************************************************
 			F O R W A R D   P U B L I C S
 *****************************************************************/
-
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	if (!L4D_IsEngineLeft4Dead2())
 		SetFailState("Plugin supports Left 4 dead 2 only!");
 
 	return APLRes_Success;
+}
+
+public void OnLibraryAdded(const char[] sName)
+{
+	if (!StrEqual(sName, "readyup"))
+		return;
+
+	l4d_ready_cfg_name = FindConVar("l4d_ready_cfg_name");
 }
 
 public void OnPluginStart()
@@ -122,7 +128,7 @@ public void OnPluginStart()
 	g_cvarDebug			   = CreateConVar("sm_scavenge_gamemode_debug", "0", "Enable debug", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_cvarEnable		   = CreateConVar("sm_scavenge_gamemode_enable", "1", "Enable Scavenge Rounds", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_cvarPrintCvar		   = CreateConVar("sm_scavenge_gamemode_printcvar", "1", "Print cvar changes", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	g_cvarCFGName		   = CreateConVar("sm_scavenge_gamemode_forcename", "1", "Force the convar l4d_ready_cfg_name according to the game mode.", FCVAR_NOTIFY, true, 0.0, true, 1.0);	
+	g_cvarCFGName		   = CreateConVar("sm_scavenge_gamemode_forcename", "1", "Force the convar l4d_ready_cfg_name according to the game mode.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
 	z_versus_hunter_limit  = FindConVar("z_versus_hunter_limit");
 	z_versus_boomer_limit  = FindConVar("z_versus_boomer_limit");
@@ -200,7 +206,7 @@ public Action ModeRequest(int iClient, int iArgs)
 			return Plugin_Handled;
 		}
 
-		ChangeGameMode(gmArg);
+		ChangeGameMode(gmArg.mode, gmArg.ishunter);
 		return Plugin_Handled;
 	}
 
@@ -234,9 +240,7 @@ public Action InfectedLimit(int iArgs)
 		return Plugin_Handled;
 	}
 
-	g_cvarPrintCvar.SetInt(0);
-	ChangeGameMode(gmArg, false);
-	g_cvarPrintCvar.SetInt(1);
+	ChangeGameMode(gmArg.mode, gmArg.ishunter, false);
 	return Plugin_Handled;
 }
 
@@ -250,7 +254,7 @@ public void OnPluginEnd()
 	z_versus_spitter_limit.RestoreDefault();
 
 	if (g_cvarCFGName.BoolValue)
-		FindConVar("l4d_ready_cfg_name").RestoreDefault();
+		l4d_ready_cfg_name.RestoreDefault();
 }
 
 /*****************************************************************
@@ -401,11 +405,14 @@ bool CreateVote(int iClient, GameMode gm)
 	SetBuiltinVoteResultCallback(g_hVote, MatchVoteResultHandler);
 	DisplayBuiltinVote(g_hVote, iPlayers, iNumPlayers, 20);
 
+	PrintDebug("Vote created successfully for game mode %s by client %d", gm.ishunter ? sHunterName[gm.mode] : sScavName[gm.mode], iClient);
 	return true;
 }
 
 public void VoteActionHandler(Handle vote, BuiltinVoteAction action, int param1, int param2)
 {
+	PrintDebug("Vote action handler called with action %d", action);
+
 	switch (action)
 	{
 		case BuiltinVoteAction_End:
@@ -414,27 +421,30 @@ public void VoteActionHandler(Handle vote, BuiltinVoteAction action, int param1,
 			g_hVote			  = null;
 			g_gmVote.mode	  = mode_none;
 			g_gmVote.ishunter = false;
+			PrintDebug("Vote ended");
 		}
 		case BuiltinVoteAction_Cancel:
 		{
 			DisplayBuiltinVoteFail(vote, view_as<BuiltinVoteFailReason>(param1));
+			PrintDebug("Vote cancelled with reason %d", param1);
 		}
 	}
 }
 
 public void MatchVoteResultHandler(Handle vote, int num_votes, int num_clients, const int[][] client_info, int num_items, const int[][] item_info)
 {
+	PrintDebug("Match vote result handler called with %d votes and %d clients", num_votes, num_clients);
+
 	for (int i = 0; i < num_items; i++)
 	{
 		if (item_info[i][BUILTINVOTEINFO_ITEM_INDEX] == BUILTINVOTES_VOTE_YES)
 		{
 			if (item_info[i][BUILTINVOTEINFO_ITEM_VOTES] > (num_votes / 2))
 			{
+				PrintDebug("Vote passed, game mode changed to %s", g_gmVote.ishunter ? sHunterName[g_gmVote.mode] : sScavName[g_gmVote.mode]);
 				DisplayBuiltinVotePass2(vote, "VotePassed");
 
-				g_cvarPrintCvar.SetInt(0);
-				ChangeGameMode(g_gmVote);
-				g_cvarPrintCvar.SetInt(1);
+				ChangeGameMode(g_gmVote.mode, g_gmVote.ishunter);
 
 				g_gmVote.mode	  = mode_none;
 				g_gmVote.ishunter = false;
@@ -444,6 +454,7 @@ public void MatchVoteResultHandler(Handle vote, int num_votes, int num_clients, 
 	}
 
 	DisplayBuiltinVoteFail(vote, BuiltinVoteFail_Loses);
+	PrintDebug("Vote failed");
 }
 
 /**
@@ -463,7 +474,6 @@ bool GetGamemode(const char[] sGamemode, GameMode gm)
 			bScav = StrEqual(sScavMode[i], sGamemode),
 			bHunt = StrEqual(sHunterMode[i], sGamemode);
 
-		PrintDebug("Gamemode: %s | %s: %d | %s: %d", sGamemode, sScavMode[i], view_as<int>(bScav), sHunterMode[i], view_as<int>(bHunt));
 		if (bScav || bHunt)
 		{
 			gm.ishunter = bHunt;
@@ -475,85 +485,115 @@ bool GetGamemode(const char[] sGamemode, GameMode gm)
 }
 
 /**
- * Changes the configuration name based on the game mode.
+ * Changes the configuration name based on the given game mode.
  *
- * @param gm The GameMode struct containing information about the game mode.
+ * @param gm The game mode structure containing information about the current game mode.
+ *
+ * This function retrieves the current configuration name, modifies it based on whether the game mode
+ * involves a hunter or not, and then sets the new configuration name. It also prints the new configuration
+ * name for debugging purposes.
  */
 void ChangeCFGName(GameMode gm)
 {
-	char sConfigName[32];
+	char
+		sCurrentConfigName[32];
+
+	l4d_ready_cfg_name.GetString(sCurrentConfigName, sizeof(sCurrentConfigName));
 
 	if (gm.ishunter)
-	{
-		Format(sConfigName, sizeof(sConfigName), "%s %s", sHunterName[gm.mode], CFG_VERSION);
-		strcopy(g_sConfigName, sizeof(g_sConfigName), sHunterMode[gm.mode]);
-	}
+		ReplaceString(sCurrentConfigName, sizeof(sCurrentConfigName), sScavName[gm.mode], sHunterName[gm.mode], false);
 	else
-	{
-		Format(sConfigName, sizeof(sConfigName), "%s %s", sScavName[gm.mode], CFG_VERSION);
-		strcopy(g_sConfigName, sizeof(g_sConfigName), sScavMode[gm.mode]);
-	}
+		ReplaceString(sCurrentConfigName, sizeof(sCurrentConfigName), sHunterName[gm.mode], sScavName[gm.mode], false);
 
-	if (g_cvarCFGName.BoolValue)
-	{
-		PrintDebug("CFG Name: %s | Mode Name: %s", sConfigName, g_sConfigName);
-		FindConVar("l4d_ready_cfg_name").SetString(sConfigName);
-	}
+	PrintDebug("New CFG Name: %s", sCurrentConfigName);
+	l4d_ready_cfg_name.SetString(sCurrentConfigName);
 }
 
 /**
- * Changes the game mode and updates the corresponding configuration values.
+ * Changes the game mode and sets the appropriate limits for each mode.
  *
- * @param gm The new game mode to be set.
+ * @param mode        The game mode to switch to.
+ * @param bIshunter   Boolean indicating if the mode is for hunters.
+ * @param bAnnounce   Optional boolean to announce the mode change to all players (default is true).
+ *
+ * The function sets the game mode and adjusts the limits for various infected types based on the mode and whether it is for hunters.
+ * It also announces the mode change to all players if bAnnounce is true.
+ *
+ * Modes:
+ * - mode_1v1: Sets limits for 1v1 mode.
+ * - mode_2v2: Sets limits for 2v2 mode.
+ * - mode_3v3: Sets limits for 3v3 mode.
+ * - mode_4v4: Sets limits for 4v4 mode.
+ *
+ * For each mode, the limits for different infected types (hunter, jockey, charger, smoker, boomer, spitter) are set based on whether the mode is for hunters or not.
  */
-void ChangeGameMode(GameMode gm, bool bAnnounce = true)
+void ChangeGameMode(Mode mode, bool bIshunter, bool bAnnounce = true)
 {
-	ChangeCFGName(gm);
+	GameMode gm;
+	gm.mode		= mode;
+	gm.ishunter = bIshunter;
+
+	if (g_cvarCFGName.BoolValue)
+		ChangeCFGName(gm);
 
 	if (bAnnounce)
-		CPrintToChatAll("%T %t %s", "Tag", LANG_SERVER, "ChangeMode", gm.ishunter ? sHunterName[gm.mode] : sScavName[gm.mode]);
+		CPrintToChatAll("%t %t", "Tag", LANG_SERVER, "ChangeMode", gm.ishunter ? sHunterName[gm.mode] : sScavName[gm.mode]);
 
 	switch (gm.mode)
 	{
 		case mode_1v1:
 		{
+			PrintDebug("Setting limits for mode_1v1");
 			if (gm.ishunter)
+			{
 				z_versus_jockey_limit.SetInt(0);
+				PrintDebug("Set z_versus_jockey_limit to 0");
+			}
 			else
+			{
 				z_versus_jockey_limit.SetInt(1);
+				PrintDebug("Set z_versus_jockey_limit to 1");
+			}
 
 			z_versus_charger_limit.SetInt(0);
 			z_versus_smoker_limit.SetInt(0);
 			z_versus_boomer_limit.SetInt(0);
 			z_versus_spitter_limit.SetInt(0);
+			PrintDebug("Set other limits to 0");
 		}
 		case mode_2v2:
 		{
+			PrintDebug("Setting limits for mode_2v2");
 			if (gm.ishunter)
 			{
 				z_versus_hunter_limit.SetInt(2);
 				z_versus_jockey_limit.SetInt(0);
 				z_versus_charger_limit.SetInt(0);
+				PrintDebug("Set z_versus_hunter_limit to 2, z_versus_jockey_limit and z_versus_charger_limit to 0");
 			}
 			else
 			{
 				z_versus_hunter_limit.SetInt(1);
 				z_versus_jockey_limit.SetInt(1);
 				z_versus_charger_limit.SetInt(1);
+				PrintDebug("Set z_versus_hunter_limit, z_versus_jockey_limit, and z_versus_charger_limit to 1");
 			}
 
 			z_versus_smoker_limit.SetInt(0);
 			z_versus_boomer_limit.SetInt(0);
 			z_versus_spitter_limit.SetInt(0);
+			PrintDebug("Set other limits to 0");
 		}
 		case mode_3v3:
 		{
+			PrintDebug("Setting limits for mode_3v3");
 			if (gm.ishunter)
 			{
 				z_versus_hunter_limit.SetInt(3);
 				z_versus_smoker_limit.SetInt(0);
 				z_versus_jockey_limit.SetInt(0);
 				z_versus_charger_limit.SetInt(0);
+				PrintDebug("Set z_versus_hunter_limit to 3, z_versus_smoker_limit, z_versus_jockey_limit, and z_versus_charger_limit to 0");
 			}
 			else
 			{
@@ -561,13 +601,16 @@ void ChangeGameMode(GameMode gm, bool bAnnounce = true)
 				z_versus_smoker_limit.SetInt(1);
 				z_versus_jockey_limit.SetInt(1);
 				z_versus_charger_limit.SetInt(1);
+				PrintDebug("Set z_versus_hunter_limit, z_versus_smoker_limit, z_versus_jockey_limit, and z_versus_charger_limit to 1");
 			}
 
 			z_versus_boomer_limit.SetInt(0);
 			z_versus_spitter_limit.SetInt(0);
+			PrintDebug("Set z_versus_boomer_limit and z_versus_spitter_limit to 0");
 		}
 		case mode_4v4:
 		{
+			PrintDebug("Setting limits for mode_4v4");
 			if (gm.ishunter)
 			{
 				z_versus_hunter_limit.SetInt(4);
@@ -576,6 +619,7 @@ void ChangeGameMode(GameMode gm, bool bAnnounce = true)
 				z_versus_jockey_limit.SetInt(0);
 				z_versus_charger_limit.SetInt(0);
 				z_versus_spitter_limit.SetInt(0);
+				PrintDebug("Set z_versus_hunter_limit to 4, other limits to 0");
 			}
 			else
 			{
@@ -585,6 +629,7 @@ void ChangeGameMode(GameMode gm, bool bAnnounce = true)
 				z_versus_jockey_limit.SetInt(1);
 				z_versus_charger_limit.SetInt(1);
 				z_versus_spitter_limit.SetInt(1);
+				PrintDebug("Set all limits to 1");
 			}
 		}
 	}
