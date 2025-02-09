@@ -14,7 +14,7 @@
 			G L O B A L   V A R S
 *****************************************************************/
 
-#define PLUGIN_VERSION "1.1"
+#define PLUGIN_VERSION "1.2"
 #define CONSOLE		   0
 
 ConVar
@@ -24,15 +24,14 @@ ConVar
 	g_cvarCFGName,
 
 	l4d_ready_cfg_name,
+	survivor_limit,
+
 	z_versus_hunter_limit,
 	z_versus_boomer_limit,
 	z_versus_smoker_limit,
 	z_versus_jockey_limit,
 	z_versus_charger_limit,
 	z_versus_spitter_limit;
-
-char
-	g_sConfigName[16];
 
 Handle
 	g_hVote;
@@ -84,6 +83,7 @@ enum struct GameMode
 {
 	Mode mode;
 	bool ishunter;
+	char name[32];
 }
 
 GameMode
@@ -127,7 +127,7 @@ public void OnPluginStart()
 
 	g_cvarDebug			   = CreateConVar("sm_scavenge_gamemode_debug", "0", "Enable debug", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_cvarEnable		   = CreateConVar("sm_scavenge_gamemode_enable", "1", "Enable Scavenge Rounds", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	g_cvarPrintCvar		   = CreateConVar("sm_scavenge_gamemode_printcvar", "1", "Print cvar changes", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_cvarPrintCvar		   = CreateConVar("sm_scavenge_gamemode_printcvar", "0", "Print cvar changes", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_cvarCFGName		   = CreateConVar("sm_scavenge_gamemode_forcename", "1", "Force the convar l4d_ready_cfg_name according to the game mode.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
 	z_versus_hunter_limit  = FindConVar("z_versus_hunter_limit");
@@ -136,6 +136,7 @@ public void OnPluginStart()
 	z_versus_jockey_limit  = FindConVar("z_versus_jockey_limit");
 	z_versus_charger_limit = FindConVar("z_versus_charger_limit");
 	z_versus_spitter_limit = FindConVar("z_versus_spitter_limit");
+	survivor_limit		   = FindConVar("survivor_limit");
 
 	z_versus_hunter_limit.AddChangeHook(OnVersusLimitChange);
 	z_versus_boomer_limit.AddChangeHook(OnVersusLimitChange);
@@ -155,7 +156,7 @@ public void OnVersusLimitChange(ConVar Convar, const char[] sOldValue, const cha
 
 	char sCvarName[32];
 	Convar.GetName(sCvarName, sizeof(sCvarName));
-	CPrintToChatAll("[ScavOgl] Server CVar '%s' changed from '%s' to '%s'", sCvarName, sOldValue, sNewValue);
+	PrintDebug("[ScavOgl] Server CVar '%s' changed from '%s' to '%s'", sCvarName, sOldValue, sNewValue);
 }
 
 public Action ModeRequest(int iClient, int iArgs)
@@ -169,44 +170,6 @@ public Action ModeRequest(int iClient, int iArgs)
 	if (!L4D2_IsScavengeMode())
 	{
 		CReplyToCommand(iClient, "%t %t", "Tag", "GameMode");
-		return Plugin_Handled;
-	}
-
-	if (iArgs > 0)
-	{
-		if (!CheckCommandAccess(iClient, "sm_kick", ADMFLAG_KICK))
-		{
-			CReplyToCommand(iClient, "%t %t", "Tag", "NoAccess");
-			return Plugin_Handled;
-		}
-
-		char sGamemode[32];
-		GetCmdArg(1, sGamemode, sizeof(sGamemode));
-		CurrentConfigName();
-
-		GameMode
-			gmArg,
-			gmCurrent;
-
-		bool bArgGameMode	  = GetGamemode(sGamemode, gmArg);
-		bool bCurrentGameMode = GetGamemode(g_sConfigName, gmCurrent);
-
-		if (!bCurrentGameMode)
-		{
-			CReplyToCommand(iClient, "%t %t", "Tag", "ModeNoSupported");
-			return Plugin_Handled;
-		}
-
-		char sCorrectMode[16];
-		Format(sCorrectMode, sizeof(sCorrectMode), "%s", gmCurrent.ishunter ? sScavMode[gmCurrent.mode] : sHunterMode[gmCurrent.mode]);
-
-		if (!bArgGameMode || !StrEqual(sGamemode, sCorrectMode))
-		{
-			CReplyToCommand(iClient, "%t %t sm_scavmode %s", "Tag", "Usage", sCorrectMode);
-			return Plugin_Handled;
-		}
-
-		ChangeGameMode(gmArg.mode, gmArg.ishunter);
 		return Plugin_Handled;
 	}
 
@@ -231,16 +194,18 @@ public Action InfectedLimit(int iArgs)
 	char sGamemode[32];
 	GetCmdArg(1, sGamemode, sizeof(sGamemode));
 
-	GameMode gmArg;
-	bool	 bArgGameMode = GetGamemode(sGamemode, gmArg);
+	GameMode
+		gmTarget;
 
-	if (!bArgGameMode)
+	GetGamemode(gmTarget, sGamemode);
+
+	if (gmTarget.mode == mode_none)
 	{
 		CReplyToCommand(CONSOLE, "%t %t z_scavogl_infected_limit <scav1v1|scav2v2|scav3v3|scavogl>", "Tag", "Usage");
 		return Plugin_Handled;
 	}
 
-	ChangeGameMode(gmArg.mode, gmArg.ishunter, false);
+	ChangeGameMode(gmTarget.mode, gmTarget.ishunter, false);
 	return Plugin_Handled;
 }
 
@@ -305,27 +270,22 @@ void PrintDebug(const char[] sMessage, any...)
  */
 void ModeMenu(int iClient)
 {
-	CurrentConfigName();
+	GameMode
+		gmCurrent,
+		gmTarget;
+	
+	CurrentGameMode(gmCurrent);
+	GetTergetMode(gmCurrent, gmTarget);
 
-	GameMode gm;
-	if (!GetGamemode(g_sConfigName, gm))
+	if (gmCurrent.mode == mode_none)
 	{
 		CReplyToCommand(iClient, "%t %t", "Tag", "ModeNoSupported");
 		return;
 	}
 
-	if (gm.mode == mode_none)
-	{
-		CReplyToCommand(iClient, "%t %t", "Tag", "Error_InvalidMode");
-		return;
-	}
-
-	char sGamemode[32];
-	Format(sGamemode, sizeof(sGamemode), "%s", gm.ishunter ? sScavMode[gm.mode] : sHunterMode[gm.mode]);
-
 	Menu hMenu = new Menu(MenuHandler, MENU_ACTIONS_ALL);
 	hMenu.SetTitle("%t", "MenuTitle");
-	hMenu.AddItem(sGamemode, sGamemode);
+	hMenu.AddItem(gmTarget.name, gmTarget.name);
 
 	hMenu.Display(iClient, 20);
 }
@@ -341,7 +301,7 @@ public int MenuHandler(Menu menu, MenuAction action, int iParam, int iParam2)
 			menu.GetItem(iParam2, sInfo, sizeof(sInfo));
 			GameMode gm;
 
-			GetGamemode(sInfo, gm);
+			GetGamemode(gm, sInfo);
 
 			if (gm.mode == mode_none)
 			{
@@ -396,7 +356,7 @@ bool CreateVote(int iClient, GameMode gm)
 	}
 
 	char sBuffer[64];
-	Format(sBuffer, sizeof(sBuffer), "%t", "Question", gm.ishunter ? sHunterName[gm.mode] : sScavName[gm.mode]);
+	Format(sBuffer, sizeof(sBuffer), "%t", "Question", gm.name);
 	g_gmVote = gm;
 
 	g_hVote	 = CreateBuiltinVote(VoteActionHandler, BuiltinVoteType_Custom_YesNo, BuiltinVoteAction_Cancel | BuiltinVoteAction_VoteEnd | BuiltinVoteAction_End);
@@ -405,7 +365,7 @@ bool CreateVote(int iClient, GameMode gm)
 	SetBuiltinVoteResultCallback(g_hVote, MatchVoteResultHandler);
 	DisplayBuiltinVote(g_hVote, iPlayers, iNumPlayers, 20);
 
-	PrintDebug("Vote created successfully for game mode %s by client %d", gm.ishunter ? sHunterName[gm.mode] : sScavName[gm.mode], iClient);
+	PrintDebug("Vote created successfully for game mode %s by client %N", gm.name, iClient);
 	return true;
 }
 
@@ -441,7 +401,7 @@ public void MatchVoteResultHandler(Handle vote, int num_votes, int num_clients, 
 		{
 			if (item_info[i][BUILTINVOTEINFO_ITEM_VOTES] > (num_votes / 2))
 			{
-				PrintDebug("Vote passed, game mode changed to %s", g_gmVote.ishunter ? sHunterName[g_gmVote.mode] : sScavName[g_gmVote.mode]);
+				PrintDebug("Vote passed, game mode changed to %s", g_gmVote.name);
 				DisplayBuiltinVotePass2(vote, "VotePassed");
 
 				ChangeGameMode(g_gmVote.mode, g_gmVote.ishunter);
@@ -457,31 +417,34 @@ public void MatchVoteResultHandler(Handle vote, int num_votes, int num_clients, 
 	PrintDebug("Vote failed");
 }
 
+
 /**
- * Determines the game mode based on the provided gamemode string.
+ * Retrieves the game mode based on the provided game mode string.
  *
- * @param sGamemode The gamemode string to check.
- * @param gm The GameMode struct to store the result.
- * @return True if the gamemode was found, false otherwise.
+ * @param sGamemode    The string representing the game mode to be retrieved.
+ * @return             A GameMode structure containing the game mode and whether it is a hunter mode.
  */
-bool GetGamemode(const char[] sGamemode, GameMode gm)
+void GetGamemode(GameMode gm, const char[] sGamemode)
 {
-	bool bFound = false;
 	gm.mode		= mode_none;
 	for (Mode i = mode_none; i <= mode_4v4; i++)
 	{
-		bool
-			bScav = StrEqual(sScavMode[i], sGamemode),
-			bHunt = StrEqual(sHunterMode[i], sGamemode);
 
-		if (bScav || bHunt)
+		if (StrEqual(sScavMode[i], sGamemode) || StrEqual(sScavName[i], sGamemode))
 		{
-			gm.ishunter = bHunt;
+			gm.ishunter = false;
 			gm.mode		= i;
-			bFound		= true;
+			strcopy(gm.name, sizeof(gm.name), sGamemode);
+			break;
+		}
+		else if (StrEqual(sHunterMode[i], sGamemode) || StrEqual(sHunterName[i], sGamemode))
+		{
+			gm.ishunter = true;
+			gm.mode		= i;
+			strcopy(gm.name, sizeof(gm.name), sGamemode);
+			break;
 		}
 	}
-	return bFound;
 }
 
 /**
@@ -496,17 +459,17 @@ bool GetGamemode(const char[] sGamemode, GameMode gm)
 void ChangeCFGName(GameMode gm)
 {
 	char
-		sCurrentConfigName[32];
-
-	l4d_ready_cfg_name.GetString(sCurrentConfigName, sizeof(sCurrentConfigName));
+		sConfigName[32];
+	
+	l4d_ready_cfg_name.GetString(sConfigName, sizeof(sConfigName));
 
 	if (gm.ishunter)
-		ReplaceString(sCurrentConfigName, sizeof(sCurrentConfigName), sScavName[gm.mode], sHunterName[gm.mode], false);
+		ReplaceString(sConfigName, sizeof(sConfigName), sScavName[gm.mode], sHunterName[gm.mode], false);
 	else
-		ReplaceString(sCurrentConfigName, sizeof(sCurrentConfigName), sHunterName[gm.mode], sScavName[gm.mode], false);
+		ReplaceString(sConfigName, sizeof(sConfigName), sHunterName[gm.mode], sScavName[gm.mode], false);
 
-	PrintDebug("New CFG Name: %s", sCurrentConfigName);
-	l4d_ready_cfg_name.SetString(sCurrentConfigName);
+	PrintDebug("New CFG Name: %s", sConfigName);
+	l4d_ready_cfg_name.SetString(sConfigName);
 }
 
 /**
@@ -537,7 +500,7 @@ void ChangeGameMode(Mode mode, bool bIshunter, bool bAnnounce = true)
 		ChangeCFGName(gm);
 
 	if (bAnnounce)
-		CPrintToChatAll("%t %t", "Tag", LANG_SERVER, "ChangeMode", gm.ishunter ? sHunterName[gm.mode] : sScavName[gm.mode]);
+		CPrintToChatAll("%t %t", "Tag", "ChangeMode", gm.ishunter ? sHunterName[gm.mode] : sScavName[gm.mode]);
 
 	switch (gm.mode)
 	{
@@ -635,18 +598,53 @@ void ChangeGameMode(Mode mode, bool bIshunter, bool bAnnounce = true)
 	}
 }
 
-/**
- * Retrieves the current configuration name.
- * If the global variable `g_sConfigName` is empty, it calls `LGO_GetConfigName` to get the configuration name
- * and copies it to `g_sConfigName`.
- */
-void CurrentConfigName()
-{
-	if (StrEqual(g_sConfigName, ""))
-	{
-		char sConfigName[16];
-		LGO_GetConfigName(sConfigName, sizeof(sConfigName));
 
-		strcopy(g_sConfigName, sizeof(g_sConfigName), sConfigName);
+/**
+ * Sets the current game mode based on the configuration name.
+ *
+ * @param gm        The GameMode object to be updated.
+ *
+ * The function retrieves the configuration name and checks if it contains
+ * specific substrings to determine the game mode and whether it is a hunter mode.
+ * It updates the GameMode object with the appropriate values.
+ */
+void CurrentGameMode(GameMode gm)
+{
+	char
+		sConfigName[32];
+
+	gm.mode = view_as<Mode>(survivor_limit.IntValue);
+
+	l4d_ready_cfg_name.GetString(sConfigName, sizeof(sConfigName));
+
+	if (StrContains(sConfigName, sScavName[gm.mode], false) != -1)
+	{
+		gm.ishunter = false;
+		strcopy(gm.name, sizeof(gm.name), sScavName[gm.mode]);
 	}
+	else if (StrContains(sConfigName, sHunterName[gm.mode], false) != -1)
+	{
+		gm.ishunter = true;
+		strcopy(gm.name, sizeof(gm.name), sHunterName[gm.mode]);
+	}
+	else
+	{
+		gm.ishunter = false;
+		gm.mode		= mode_none;
+		strcopy(gm.name, sizeof(gm.name), sScavName[mode_none]);
+	}
+}
+
+/**
+ * Copies the current game mode to the target game mode and toggles the hunter status.
+ *
+ * @param gmCurrent The current game mode.
+ * @param gmTarget The target game mode to be modified.
+ */
+void GetTergetMode(GameMode gmCurrent, GameMode gmTarget)
+{
+	gmTarget.mode = gmCurrent.mode;
+	gmTarget.ishunter = !gmCurrent.ishunter;
+
+	strcopy(gmTarget.name, sizeof(gmTarget.name), gmTarget.ishunter ? sHunterName[gmTarget.mode] : sScavName[gmTarget.mode]);
 }
