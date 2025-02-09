@@ -1,6 +1,6 @@
 # Scavogl Rework v2.3.4
 
-[EN] [translation](https://translate.google.com/translate?sl=es&tl=en&u=https://github.com/lechuga16/scavogl_rework)
+[EN] [translation](https://translate.google.com/translate?sl=es&tl=en&u=https://github.com/AoC-Gamers/scavogl_rework)
 
 Scavogl Rework es una configuración competitiva para Left 4 Dead 2, diseñada para mejorar y estructurar el modo Scavenge en un entorno más equilibrado y competitivo.
 
